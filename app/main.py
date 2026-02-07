@@ -1,6 +1,3 @@
-import os
-
-from dotenv import load_dotenv
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.security import APIKeyHeader
 
