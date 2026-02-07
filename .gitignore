@@ -1,0 +1,5 @@
+# VENV DIRECTORY
+venv/
+
+# PYCACHE
+__pycache__/
