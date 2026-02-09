@@ -1,19 +1,37 @@
+import os
+import json
+
+from dotenv import load_dotenv
+from pydantic import BaseModel
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.security import APIKeyHeader
 
-API_KEY_NAME = "API-Key"
+load_dotenv()
 
 app = FastAPI()
-api_key_header_read = APIKeyHeader(name=API_KEY_NAME, auto_error=False)
+api_key_header = APIKeyHeader(name="API_KEY")
+test_key = os.getenv("test_key")
 
-def verify_api_key_access_read(api_key: str = Depends(api_key_header_read)):
-    if not api_key:
-        raise HTTPException(status_code=401, detail="Missing API key")
+class SuccessfulReturn(BaseModel):
+    message: str
 
+def is_allowed_post(api_key: str, access_type: str):
+    if api_key != test_key: #TODO: Build function to verify api key
+        raise HTTPException(401)
+    
 @app.get("/")
 def read_root():
-    return 200, {"message": "Hello World"}
+    return {"message": "Hello World"}
 
-@app.post("/post_entry", dependencies=verify_api_key_access_read)
-def post_single_entry():
-    return 200, {"message": "Success"}
+class SingleEntry(BaseModel):
+    database: str
+    table: str
+    url: str
+    params: dict | None
+    data: dict
+
+@app.post("/post_entry", response_model=SuccessfulReturn)
+def post_single_entry(entry: SingleEntry, api_key=Depends(api_key_header)):
+    is_allowed_post(api_key=api_key, access_type='r')
+    print(entry.data)
+    return {"message": "success"}
