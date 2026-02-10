@@ -1,0 +1,10 @@
+# test file
+test_main.py
+
+# Docker files
+Dockerfile*
+.dockerignore
+
+# Cache
+__pychache__/
+.pytest_cache/
