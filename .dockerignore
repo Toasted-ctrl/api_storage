@@ -8,3 +8,7 @@ Dockerfile*
 # Cache
 __pychache__/
 .pytest_cache/
+
+# Git files
+.git
+.gitignore
