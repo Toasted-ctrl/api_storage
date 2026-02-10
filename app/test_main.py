@@ -1,5 +1,5 @@
 from fastapi.testclient import TestClient
-from main import app
+from app.main import app
 
 client = TestClient(app=app)
 
@@ -31,3 +31,9 @@ class TestPostSingleEntry:
         
         assert response.status_code == 401
         assert response.json() == {"detail": "Unauthorized"}
+
+    def test_missing_data(self):
+        response = client.post(url='/post_single',
+                               headers ={"API_KEY": "123"})
+        
+        assert response.status_code == 422
