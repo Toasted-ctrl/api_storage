@@ -15,5 +15,5 @@ def read_root():
 
 @app.post("/post_single", response_model=models.ReturnSuccessSimple)
 def post_single(entry: models.PostSingleEntry, api_key=Depends(api_key_header)):
-    auth.is_allowed_post(api_key=api_key, access_type='r')
+    user_id = auth.verify_api_key(api_key=api_key)
     return {"message": "success"}
