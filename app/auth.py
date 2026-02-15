@@ -2,7 +2,9 @@ import os
 import psycopg2
 
 from dotenv import load_dotenv
-from fastapi import HTTPException
+from fastapi import HTTPException, Security, Depends
+from fastapi.security import APIKeyHeader
+from typing import Callable
 
 load_dotenv()
 
@@ -12,6 +14,8 @@ db_password = os.getenv("db_password")
 db_table = os.getenv("db_table_api_key_users")
 db_user = os.getenv("db_user")
 db_port = os.getenv("db_port")
+
+api_key_header = APIKeyHeader(name="API_KEY")
 
 def verify_api_key(api_key: str, database: str, access_type: str) -> str:
 
@@ -53,3 +57,13 @@ def verify_api_key(api_key: str, database: str, access_type: str) -> str:
             cur.close()
         if conn is not None:
             conn.close()
+
+def verify_api_key_2() -> Callable[[str, Security], dict]:
+
+    def api_key_dependencies(access_type: str | None = 'Dummy access type',
+                             database: str | None = 'Dummy database',
+                             api_key = Security(api_key_header)) -> dict:
+        
+        return {"access": access_type, "database": database, "api_key": api_key}
+    
+    return api_key_dependencies
