@@ -1,4 +1,4 @@
-from app.main import app
+from app.main import app, dependecy_auth
 from fastapi import HTTPException
 from fastapi.testclient import TestClient
 
@@ -86,3 +86,27 @@ class TestPostSingleEntry:
                                headers ={"API_KEY": "123"})
         
         assert response.status_code == 422
+
+def override_api_key_invalid():
+    raise HTTPException(403)
+
+def override_api_key_valid():
+    return {"api_key": "test-key-123", "database": "test-db-123", "access_type": "Write"}
+
+class TestPostSingle2:
+
+    def test_api_key_invalid(self):
+        app.dependency_overrides[dependecy_auth] = override_api_key_invalid
+        response = client.post(url='/single_2',
+                               headers={"API-KEY": "test-api-key-123"})
+        
+        assert response.status_code == 403
+        app.dependency_overrides.clear()
+
+    def test_success(self):
+        app.dependency_overrides[dependecy_auth] = override_api_key_valid
+        response = client.post(url='/single_2',
+                               headers={"API-KEY": "test-api-key-123"})
+        
+        assert response.status_code == 200
+        app.dependency_overrides.clear()
