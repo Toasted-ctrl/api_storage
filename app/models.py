@@ -1,15 +1,17 @@
 from pydantic import BaseModel
 
-class InputSingleEntry(BaseModel):
+class ReturnSimple(BaseModel):
+    message: str
+
+class InputSingle(BaseModel):
     table: str
     url: str
     params: dict | None = None
     data: dict
 
-class ReturnSimple(BaseModel):
+class ReturnSingle(BaseModel):
     message: str
-
-class ReturnPostSingle(BaseModel):
-    message: str
-    user_id: str
+    api_key: str
+    url: str
+    table: str
     data: dict
