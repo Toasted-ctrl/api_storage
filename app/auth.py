@@ -1,8 +1,9 @@
 import os
 import psycopg2
 
+from datetime import datetime
 from dotenv import load_dotenv
-from fastapi import HTTPException, Security, Depends
+from fastapi import HTTPException, Security
 from fastapi.security import APIKeyHeader
 from typing import Callable
 
@@ -17,53 +18,47 @@ db_port = os.getenv("db_port")
 
 api_key_header = APIKeyHeader(name="API_KEY")
 
-def verify_api_key(api_key: str, database: str, access_type: str) -> str:
+# TODO: Build function to test this feature.
+def verify_api_key() -> Callable[[Security], dict[int, str]]:
 
-    try:
+    def api_key_dependencies(api_key: str = Security(api_key_header)) -> dict[int, str]:
 
-        conn = psycopg2.connect(
-            host=db_hostname,
-            database=db_database,
-            user=db_user,
-            password=db_password,
-            port=db_port
-        )
+        try:
 
-        # Create cursor
-        cur = conn.cursor()
+            conn = psycopg2.connect(
+                database=db_database,
+                user=db_user,
+                password=db_password,
+                host=db_hostname,
+                port=db_port
+            )
 
-        # Execute query
-        cur.execute(f"""SELECT id FROM {db_table}
-                    WHERE api_key = '{api_key}'
-                    AND database = '{database}'
-                    AND access_type = '{access_type}'""")
+            cursor = conn.cursor()
 
-        # Fetch one result
-        user_id = cur.fetchone()
+            current_time = datetime.now()
 
-        if user_id == None:
-            raise HTTPException(status_code=401)
+            cursor.execute(f"SELECT id FROM {db_table} WHERE api_key = '{api_key}' AND expiry_date > '{current_time}'")
+
+            user_id = cursor.fetchone()
+
+            if user_id == None:
+                raise HTTPException(403, detail="Invalid API Key")
+            
+            if cursor is not None: # TODO: Investigate if this is the proper way to handle.
+                cursor.close()
+
+            if conn is not None: # TODO: Investigate if this is the proper way to handle.
+                conn.close()
         
-        return user_id
-    
-    except HTTPException as httpe:
-        raise HTTPException(status_code=httpe.status_code, detail=httpe.detail)
-
-    except psycopg2.Error:
-        raise HTTPException(500)
-    
-    finally:
-        if cur is not None:
-            cur.close()
-        if conn is not None:
-            conn.close()
-
-def verify_api_key_2() -> Callable[[str, Security], dict]:
-
-    def api_key_dependencies(access_type: str | None = 'Dummy access type',
-                             database: str | None = 'Dummy database',
-                             api_key = Security(api_key_header)) -> dict:
+            return {"user_id": user_id, "api_key": api_key}
         
-        return {"access": access_type, "database": database, "api_key": api_key}
+        except HTTPException as httpe:
+            raise HTTPException(httpe.status_code, detail=httpe.detail)
+        
+        except psycopg2.Error:
+            raise HTTPException(500, detail="Unknown Server Error: DB query")
+        
+        except Exception:
+            raise HTTPException(500, detail='Unknown Server Error')
     
     return api_key_dependencies
