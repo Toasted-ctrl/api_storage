@@ -2,6 +2,11 @@ from pydantic import BaseModel
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
+class ReturnRoot(BaseModel):
+    message: str
+    version: str
+    contact: str
+
 class ReturnSimple(BaseModel):
     message: str
 
