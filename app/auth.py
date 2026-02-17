@@ -19,7 +19,7 @@ db_port = os.getenv("db_port")
 api_key_header = APIKeyHeader(name="API_KEY")
 
 # TODO: Build function to test this feature.
-def verify_api_key() -> Callable[[Security], dict[int, str]]:
+def verify_api_key(is_admin: bool = False) -> Callable[[str], dict[int, str]]:
 
     def api_key_dependencies(api_key: str = Security(api_key_header)) -> dict[int, str]:
 
@@ -37,7 +37,12 @@ def verify_api_key() -> Callable[[Security], dict[int, str]]:
 
             current_time = datetime.now()
 
-            cursor.execute(f"SELECT id FROM {db_table} WHERE api_key = '{api_key}' AND expiry_date > '{current_time}'")
+            query = f"SELECT id FROM {db_table} WHERE api_key = '{api_key}' AND expiry_date > '{current_time}'"
+
+            if is_admin == True:
+                query = f"SELECT id FROM {db_table} WHERE api_key = '{api_key}' AND expiry_date > '{current_time}' AND is_admin = 'True'"
+
+            cursor.execute(query=query)
 
             user_id = cursor.fetchone()
 
