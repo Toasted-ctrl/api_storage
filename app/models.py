@@ -1,17 +1,31 @@
 from pydantic import BaseModel
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 
 class ReturnSimple(BaseModel):
     message: str
 
-class InputSingle(BaseModel):
+class InputDataSingle(BaseModel):
     table: str
     url: str
     params: dict | None = None
     data: dict
 
-class ReturnSingle(BaseModel):
+class ReturnDataSingle(BaseModel):
     message: str
     api_key: str
     url: str
     table: str
     data: dict
+
+class InputNewUser(BaseModel):
+    user_first_name: str
+    user_last_name: str
+    access_type: str
+    expiry_date: datetime | None = datetime.now() + relativedelta(month=6)
+
+class ReturnNewUser(BaseModel):
+    message: str
+    api_key: str
+    new_user_api_key: str
+    expiry_date: datetime
