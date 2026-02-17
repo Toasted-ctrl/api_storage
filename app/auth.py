@@ -47,7 +47,7 @@ def verify_api_key(is_admin: bool = False) -> Callable[[str], dict[int, str]]:
             user_id = cursor.fetchone()
 
             if user_id == None:
-                raise HTTPException(403, detail="Invalid API Key")
+                raise HTTPException(403)
             
             if cursor is not None: # TODO: Investigate if this is the proper way to handle.
                 cursor.close()
