@@ -22,7 +22,7 @@ class InputNewUser(BaseModel):
     user_first_name: str
     user_last_name: str
     access_type: str
-    expiry_date: datetime | None = datetime.now() + relativedelta(month=6)
+    expiry_date: datetime | None = datetime.now() + relativedelta(months=6)
 
 class ReturnNewUser(BaseModel):
     message: str
