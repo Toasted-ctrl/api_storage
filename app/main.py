@@ -2,16 +2,18 @@ from app import models
 from app import auth
 from fastapi import FastAPI, Depends
 
-app = FastAPI()
+app = FastAPI(version="0.0.1", contact="REPLACE-WITH-CONTACT")
 
 # Create auth dependencies
 dependency_auth = auth.verify_api_key()
 dependency_auth_admin = auth.verify_api_key(is_admin=True)
     
-@app.get("/", response_model=models.ReturnSimple)
+@app.get("/", response_model=models.ReturnRoot)
 def root():
     
-    return {"message": "Hello World"}
+    return {"message": "Hello There",
+            "version": app.version,
+            "contact": app.contact}
 
 @app.post("/single", response_model=models.ReturnDataSingle)
 def single(payload: models.InputDataSingle, user=Depends(dependency=dependency_auth)):
