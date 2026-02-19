@@ -5,7 +5,7 @@ from dateutil.relativedelta import relativedelta
 class ReturnRoot(BaseModel):
     message: str
     version: str
-    contact: str
+    contact: dict
 
 class ReturnSimple(BaseModel):
     message: str
