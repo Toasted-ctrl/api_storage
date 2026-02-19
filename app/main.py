@@ -1,37 +1,45 @@
 from app import models
-from app import auth
+from app import database
 from fastapi import FastAPI, Depends
+from fastapi.security import APIKeyHeader
+from sqlalchemy.orm import Session
 
-app = FastAPI(version="0.0.1", contact="REPLACE-WITH-CONTACT")
-
-# Create auth dependencies
-dependency_auth = auth.verify_api_key()
-dependency_auth_admin = auth.verify_api_key(is_admin=True)
+app = FastAPI(version="0.0.1", contact={"maintainer": "Toasted-ctrl"})
+api_key_header = APIKeyHeader(name="api-key")
+db_con = database.get_database()
     
-@app.get("/", response_model=models.ReturnRoot)
+@app.get("/", response_model = models.ReturnRoot)
 def root():
     
     return {"message": "Hello There",
             "version": app.version,
             "contact": app.contact}
 
-@app.post("/single", response_model=models.ReturnDataSingle)
-def single(payload: models.InputDataSingle, user=Depends(dependency=dependency_auth)):
+@app.post("/single", response_model = models.ReturnDataSingle)
+def single(payload: models.InputDataSingle,
+           db: Session = Depends(db_con),
+           api_key: str = Depends(api_key_header)):
 
+    # TODO: Build auth function
     # TODO: Finalize implementation
+    # TODO: Rewrite all tests
     
     return {"message": "Success",
-            "api_key": user['api_key'],
+            "api_key": api_key,
             "url": payload.url,
             "table": payload.table,
             "data": payload.data}
 
-@app.post("/add_user", response_model=models.ReturnNewUser)
-def add_user(payload: models.InputNewUser, user=Depends(dependency=dependency_auth_admin)):
+@app.post("/add_user", response_model = models.ReturnNewUser)
+def add_user(payload:models.InputNewUser,
+             db: Session = Depends(db_con),
+             api_key: str = Depends(api_key_header)):
 
+    # TODO: Build auth function
     # TODO: Finalize implementation
+    # TODO: Rewrite all tests
     
     return {"message": "Success",
-            "api_key": user['api_key'],
-            "new_user_api_key": "test-new-user-api-key-123",
+            "api_key": "test-key",
+            "new_user_api_key": api_key,
             "expiry_date": payload.expiry_date}
