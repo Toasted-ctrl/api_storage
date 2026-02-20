@@ -13,27 +13,27 @@ username = os.getenv("user")
 port = os.getenv("port")
 
 engine = create_engine(f"postgresql+psycopg2://{username}:{password}@{hostname}:{port}/{database}")
-session_local = sessionmaker(autoflush=False, bind=engine)
+db_session = sessionmaker(autocommit = False, autoflush = False, bind = engine)
 base = declarative_base()
 
 # TODO: Write tests for get_database()
 
 def get_database():
-    def database_session():
-        database = session_local()
+    def _get_database():
+        database = db_session()
         try:
             yield database
         finally:
             database.close()
-    return database_session
+    return _get_database
 
 class Permissions(base):
-    __tablename__ ='permissions'
+    __tablename__ = 'permissions'
 
-    id = Column(Integer, primary_key=True, index=True)
-    first_name = Column(String(100), nullable=False)
-    last_name = Column(String(100), nullable=False)
-    api_key = Column(String(100), nullable=False)
-    is_admin = Column(Boolean, nullable=False)
+    id = Column(Integer, primary_key = True, index = True)
+    first_name = Column(String(100), nullable = False)
+    last_name = Column(String(100), nullable = False)
+    api_key = Column(String(100), nullable = False)
+    is_admin = Column(Boolean, nullable = False)
 
 base.metadata.create_all(engine)
