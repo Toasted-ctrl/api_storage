@@ -31,7 +31,7 @@ def single(payload: models.InputDataSingle,
             "data": payload.data}
 
 @app.post("/add_user", response_model = models.ReturnNewUser)
-def add_user(payload:models.InputNewUser,
+def add_user(payload: models.InputNewUser,
              db: Session = Depends(db_con),
              api_key: str = Depends(api_key_header)):
 
