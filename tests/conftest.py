@@ -4,38 +4,50 @@
 import pytest
 
 from sqlalchemy import create_engine
+
+# Staticpool to be used so we don't create new tables on new connections, but rather just use one connection.
+# Staticpool only to be used in tests, NOT prod.
+
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.pool import StaticPool
 from fastapi.testclient import TestClient
 
 from app.main import app, get_database
 from app.database import base, Permissions
 
-test_db_url = "sqlite:///:memory:"
-test_engine = create_engine(test_db_url, connect_args={"check_same_thread": False})
-test_session_local = sessionmaker(autocommit=False, autoflush=False, bind=test_engine)
+test_in_memory_db_url = "sqlite:///:memory:" # Will create an in-memory db
+test_engine = create_engine(test_in_memory_db_url,
+                            connect_args={"check_same_thread": False},
+                            poolclass=StaticPool)
+
+# autocommit=False will prevent automatic commit.
+# We'd need to call .commit() explicitly to save the transaction.
+# autoflush=False will prevent sending of data to db when using .add()
+# autoflush=True would allow us to rollback a change if needed.
+# Using .commit() cannot be rolled back, the change is permanent.
+
+test_session_local = sessionmaker(autocommit=False,
+                                  autoflush=False,
+                                  bind=test_engine)
 
 @pytest.fixture(scope="function")
 def fake_db():
 
     base.metadata.create_all(bind=test_engine)
 
-    connection = test_engine.connect()
-    transaction = connection.begin()
-    db_session = test_session_local(bind=connection)
+    db_session = test_session_local()
 
-    new_permissions = Permissions(first_name='fn-123',
-                                  last_name='ln-123',
-                                  api_key='test-key-123',
+    new_permissions = Permissions(first_name='FIRST-NAME-123',
+                                  last_name='LAST-NAME-123',
+                                  api_key='TEST-KEY-123',
                                   is_admin=True)
     
     db_session.add(new_permissions)
-    db_session.flush()
+    db_session.commit()
 
     yield db_session
 
     db_session.close()
-    transaction.rollback()
-    connection.close()
 
     base.metadata.drop_all(bind=test_engine)
 
