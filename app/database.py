@@ -12,20 +12,18 @@ password = os.getenv("password")
 username = os.getenv("user")
 port = os.getenv("port")
 
-engine = create_engine(f"postgresql+psycopg2://{username}:{password}@{hostname}:{port}/{database}")
+database_url = f"postgresql+psycopg2://{username}:{password}@{hostname}:{port}/{database}"
+
+engine = create_engine(url=database_url)
 db_session = sessionmaker(autocommit = False, autoflush = False, bind = engine)
 base = declarative_base()
 
-# TODO: Write tests for get_database()
-
 def get_database():
-    def _get_database():
-        database = db_session()
-        try:
-            yield database
-        finally:
-            database.close()
-    return _get_database
+    database = db_session()
+    try:
+        yield database
+    finally:
+        database.close()
 
 class Permissions(base):
     __tablename__ = 'permissions'
@@ -36,4 +34,4 @@ class Permissions(base):
     api_key = Column(String(100), nullable = False)
     is_admin = Column(Boolean, nullable = False)
 
-base.metadata.create_all(engine)
+#base.metadata.create_all(engine)
