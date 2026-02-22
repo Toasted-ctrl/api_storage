@@ -13,7 +13,7 @@ from sqlalchemy.pool import StaticPool
 from fastapi.testclient import TestClient
 
 from app.main import app, get_database
-from app.database import base, Permissions
+from app.database import base, ApiKeys, Users
 
 test_in_memory_db_url = "sqlite:///:memory:" # Will create an in-memory db
 test_engine = create_engine(test_in_memory_db_url,
@@ -37,12 +37,38 @@ def fake_db():
 
     db_session = test_session_local()
 
-    new_permissions = Permissions(first_name='FIRST-NAME-123',
-                                  last_name='LAST-NAME-123',
-                                  api_key='TEST-KEY-123',
-                                  is_admin=True)
+    # Adding user 1 api key and access rights
+
+    new_api_key_user_1 = ApiKeys(api_key="TEST-KEY-123",
+                          id=1)
     
-    db_session.add(new_permissions)
+    db_session.add(new_api_key_user_1)
+    db_session.commit()
+
+    new_permissions_user_1 = Users(first_name="FIRST-NAME-123",
+                            last_name="LAST-NAME-123",
+                            is_admin=True,
+                            can_read=True,
+                            can_write=True)
+    
+    db_session.add(new_permissions_user_1)
+    db_session.commit()
+
+    # Adding user 2 api key and access rights
+
+    new_api_key_user_2 = ApiKeys(api_key="TEST-KEY-789",
+                                 id=2)
+    
+    db_session.add(new_api_key_user_2)
+    db_session.commit()
+
+    new_permissions_user_2 = Users(first_name="FIRST-NAME-789",
+                                   last_name="LAST-NAME-789",
+                                   is_admin=False,
+                                   can_read=False,
+                                   can_write=False)
+    
+    db_session.add(new_permissions_user_2)
     db_session.commit()
 
     yield db_session
