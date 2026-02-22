@@ -7,6 +7,9 @@ class ReturnRoot(BaseModel):
     version: str
     contact: dict
 
+class ReturnHealth(BaseModel):
+    status: str
+
 class ReturnSimple(BaseModel):
     message: str
 
@@ -18,15 +21,16 @@ class InputDataSingle(BaseModel):
 
 class ReturnDataSingle(BaseModel):
     message: str
-    api_key: str
     url: str
     table: str
     data: dict
 
 class InputNewUser(BaseModel):
-    user_first_name: str
-    user_last_name: str
-    access_type: str
+    first_name: str
+    last_name: str
+    is_admin: bool
+    can_write: bool
+    can_read: bool
     expiry_date: datetime | None = datetime.now() + relativedelta(months=6)
 
 class ReturnNewUser(BaseModel):
