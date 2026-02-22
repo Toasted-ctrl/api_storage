@@ -25,13 +25,20 @@ def get_database():
     finally:
         database.close()
 
-class Permissions(base):
-    __tablename__ = 'permissions'
+class ApiKeys(base):
+    __tablename__ = 'api_keys'
 
-    id = Column(Integer, primary_key = True, index = True)
-    first_name = Column(String(100), nullable = False)
-    last_name = Column(String(100), nullable = False)
-    api_key = Column(String(100), nullable = False)
-    is_admin = Column(Boolean, nullable = False)
+    api_key = Column(String(150), primary_key=True, nullable=False)
+    id = Column(Integer, nullable=False)
+
+class Users(base):
+    __tablename__ = 'users'
+
+    id = Column(Integer, primary_key=True, index=True)
+    first_name = Column(String(100), nullable=False)
+    last_name = Column(String(100), nullable=False)
+    is_admin = Column(Boolean, nullable=False)
+    can_read = Column(Boolean, nullable=False)
+    can_write = Column(Boolean, nullable=False)
 
 #base.metadata.create_all(engine)
