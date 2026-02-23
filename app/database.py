@@ -1,7 +1,11 @@
 import os
 
 from dotenv import load_dotenv
-from sqlalchemy import create_engine, Column, Integer, String, Boolean
+
+# func is function on the server side
+# JSON data may be added by using dicts
+
+from sqlalchemy import create_engine, Column, Integer, String, Boolean, JSON, DateTime, func
 from sqlalchemy.orm import sessionmaker, declarative_base
 
 load_dotenv()
@@ -29,16 +33,28 @@ class ApiKeys(base):
     __tablename__ = 'api_keys'
 
     api_key = Column(String(150), primary_key=True, nullable=False)
-    id = Column(Integer, nullable=False)
+    user_id = Column(Integer, nullable=False)
 
 class Users(base):
     __tablename__ = 'users'
 
-    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, primary_key=True, autoincrement=True, index=True)
     first_name = Column(String(100), nullable=False)
     last_name = Column(String(100), nullable=False)
     is_admin = Column(Boolean, nullable=False)
     can_read = Column(Boolean, nullable=False)
     can_write = Column(Boolean, nullable=False)
+
+class Ingest(base):
+    __tablename__ = 'ingest'
+
+    item_id = Column(Integer, primary_key=True)
+    url_primary = Column(String(100), nullable=False)
+    url_extension = Column(String(100), nullable=True)
+    params = Column(JSON, nullable=True)
+    data = Column(JSON, nullable=False)
+
+    # Will add datetime of when the entry was added on the server side.
+    date_added = Column(DateTime(timezone=False), server_default=func.now(), nullable=False)
 
 #base.metadata.create_all(engine)
