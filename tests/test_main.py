@@ -1,4 +1,5 @@
 from app.main import app
+from app.database import Ingest, Users
 from fastapi.testclient import TestClient
 from datetime import datetime
 
@@ -22,26 +23,41 @@ class TestHealth:
 
 class TestPostSingle:
 
-    def test_success(self, client_with_fake_db):
+    def test_success(self, client_with_fake_db, fake_db):
         response = client_with_fake_db.post(url='/single',
                                             headers={"api-key": "TEST-KEY-123"},
                                             json={"table": "TEST-TABLE-123",
-                                                  "url": "TEST-URL-123",
+                                                  "url_primary": "TEST-URL-123",
+                                                  "url_extension": "TEST-EXTENSION-123",
+                                                  "params": {
+                                                      "param_item_1": "PARAM-ITEM-1-OK"},
                                                   "data": {
-                                                      "data-item-1": "DATA-ITEM-1-OK"}})
+                                                      "data_item_1": "DATA-ITEM-1-OK"}})
         
         assert response.status_code == 200
         assert response.json() == {"message": "Success",
-                                   "table": "TEST-TABLE-123",
-                                   "url": "TEST-URL-123",
+                                   "url_primary": "TEST-URL-123",
+                                   "url_extension": "TEST-EXTENSION-123",
+                                   "params": {
+                                       "param_item_1": "PARAM-ITEM-1-OK"},
                                    "data": {
-                                       "data-item-1": "DATA-ITEM-1-OK"}}
+                                       "data_item_1": "DATA-ITEM-1-OK"}}
+        
+        # Verifying that the entry actually got added to the database
+
+        check_tb_ingest = fake_db.query(Ingest).first()
+        assert check_tb_ingest.url_primary == "TEST-URL-123"
+        assert check_tb_ingest.url_extension == "TEST-EXTENSION-123"
+        assert check_tb_ingest.params == {"param_item_1": "PARAM-ITEM-1-OK"}
+        assert check_tb_ingest.data == {"data_item_1": "DATA-ITEM-1-OK"}
+        assert isinstance(check_tb_ingest.date_added, datetime)
 
     def test_api_key_invalid(self, client_with_fake_db):
         response = client_with_fake_db.post(url='/single',
                                             headers={"api-key": "TEST-KEY-XYZ"},
                                             json={"table": "TEST-TABLE-123",
-                                                  "url": "TEST-URL-123",
+                                                  "url_primary": "TEST-URL-123",
+                                                  "url_extension": "TEST-EXTENSION-123",
                                                   "data": {
                                                       "data-item-1": "DATA-ITEM-1-OK"}})
         
@@ -50,6 +66,7 @@ class TestPostSingle:
 
     def test_api_key_server_error(self):
         pass
+
         # TODO: Replace with real test, for now pass.
 
     def test_api_key_missing(self, client_with_fake_db):
@@ -81,7 +98,8 @@ class TestPostSingle:
         response = client_with_fake_db.post(url='/single',
                                             headers={"api-key": "TEST-KEY-789"},
                                             json={"table": "TEST-TABLE-123",
-                                                  "url": "TEST-URL-123",
+                                                  "url_primary": "TEST-URL-123",
+                                                  "url_extension": "TEST-EXTENSION-123",
                                                   "data": {
                                                       "data-item-1": "DATA-ITEM-1-OK"}})
         
@@ -90,7 +108,7 @@ class TestPostSingle:
 
 class TestPostAddUser():
 
-    def test_success(self, client_with_fake_db):
+    def test_success(self, client_with_fake_db, fake_db):
         test_date = str(datetime.now())
         response = client_with_fake_db.post(url='/add_user',
                                             headers={"api-key": "TEST-KEY-123"},
@@ -106,6 +124,14 @@ class TestPostAddUser():
                                    "new_user_api_key": "TEST-KEY-NEW-USER-123",
                                    "api_key": "TEST-KEY-123",
                                    "expiry_date": test_date.replace(' ', 'T')}
+        
+        # Verifying that a new user got added to the users table.
+        check_tb_users = fake_db.query(Users).filter(Users.user_id == 3).first()
+        assert check_tb_users.first_name == "FIRST-NAME-456"
+        assert check_tb_users.last_name == "LAST-NAME-456"
+        assert check_tb_users.is_admin == False
+        assert check_tb_users.can_read == True
+        assert check_tb_users.can_write == False
 
     def test_api_key_invalid(self, client_with_fake_db):
         response = client_with_fake_db.post(url='/add_user',
