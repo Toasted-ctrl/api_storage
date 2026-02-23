@@ -14,16 +14,17 @@ class ReturnSimple(BaseModel):
     message: str
 
 class InputDataSingle(BaseModel):
-    table: str
-    url: str
+    url_primary: str
+    url_extension: str
     params: dict | None = None
     data: dict
 
 class ReturnDataSingle(BaseModel):
     message: str
-    url: str
-    table: str
+    url_primary: str
+    url_extension: str
     data: dict
+    params: dict | None = None
 
 class InputNewUser(BaseModel):
     first_name: str
