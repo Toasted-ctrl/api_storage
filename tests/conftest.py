@@ -45,11 +45,12 @@ def fake_db():
     db_session.add(new_api_key_user_1)
     db_session.commit()
 
-    new_permissions_user_1 = Users(first_name="FIRST-NAME-123",
-                            last_name="LAST-NAME-123",
-                            is_admin=True,
-                            can_read=True,
-                            can_write=True)
+    new_permissions_user_1 = Users(email="TEST-MAIL-123@test.com",
+                                   first_name="FIRST-NAME-123",
+                                   last_name="LAST-NAME-123",
+                                   is_admin=True,
+                                   can_read=True,
+                                   can_write=True)
     
     db_session.add(new_permissions_user_1)
     db_session.commit()
@@ -62,7 +63,8 @@ def fake_db():
     db_session.add(new_api_key_user_2)
     db_session.commit()
 
-    new_permissions_user_2 = Users(first_name="FIRST-NAME-789",
+    new_permissions_user_2 = Users(email="TEST-MAIL-789@test2.com",
+                                   first_name="FIRST-NAME-789",
                                    last_name="LAST-NAME-789",
                                    is_admin=False,
                                    can_read=False,

@@ -17,6 +17,7 @@ class InputDataSingle(BaseModel):
     url_primary: str
     url_extension: str
     params: dict | None = None
+    status_code: int
     data: dict
 
 class ReturnDataSingle(BaseModel):
@@ -27,6 +28,7 @@ class ReturnDataSingle(BaseModel):
     params: dict | None = None
 
 class InputNewUser(BaseModel):
+    email: str
     first_name: str
     last_name: str
     is_admin: bool
@@ -36,6 +38,4 @@ class InputNewUser(BaseModel):
 
 class ReturnNewUser(BaseModel):
     message: str
-    api_key: str
-    new_user_api_key: str
-    expiry_date: datetime
+    new_user: dict
