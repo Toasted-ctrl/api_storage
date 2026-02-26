@@ -1,5 +1,5 @@
 from app.main import app
-from app.database import Ingest, Users
+from app.database import Ingest, Users, ApiKeys
 from fastapi.testclient import TestClient
 from datetime import datetime
 
@@ -26,9 +26,9 @@ class TestPostSingle:
     def test_success(self, client_with_fake_db, fake_db):
         response = client_with_fake_db.post(url='/single',
                                             headers={"api-key": "TEST-KEY-123"},
-                                            json={"table": "TEST-TABLE-123",
-                                                  "url_primary": "TEST-URL-123",
+                                            json={"url_primary": "TEST-URL-123",
                                                   "url_extension": "TEST-EXTENSION-123",
+                                                  "status_code": 200,
                                                   "params": {
                                                       "param_item_1": "PARAM-ITEM-1-OK"},
                                                   "data": {
@@ -58,6 +58,7 @@ class TestPostSingle:
                                             json={"table": "TEST-TABLE-123",
                                                   "url_primary": "TEST-URL-123",
                                                   "url_extension": "TEST-EXTENSION-123",
+                                                  "status_code": 200,
                                                   "data": {
                                                       "data-item-1": "DATA-ITEM-1-OK"}})
         
@@ -100,6 +101,7 @@ class TestPostSingle:
                                             json={"table": "TEST-TABLE-123",
                                                   "url_primary": "TEST-URL-123",
                                                   "url_extension": "TEST-EXTENSION-123",
+                                                  "status_code": 200,
                                                   "data": {
                                                       "data-item-1": "DATA-ITEM-1-OK"}})
         
@@ -112,7 +114,8 @@ class TestPostAddUser():
         test_date = str(datetime.now())
         response = client_with_fake_db.post(url='/add_user',
                                             headers={"api-key": "TEST-KEY-123"},
-                                            json={"first_name": "FIRST-NAME-456",
+                                            json={"email": "TEST-MAIL-456@test3.com",
+                                                  "first_name": "FIRST-NAME-456",
                                                   "last_name": "LAST-NAME-456",
                                                   "is_admin": False,
                                                   "can_read": True,
@@ -120,10 +123,10 @@ class TestPostAddUser():
                                                   "expiry_date": test_date})
         
         assert response.status_code == 200
-        assert response.json() == {"message": "Success",
-                                   "new_user_api_key": "TEST-KEY-NEW-USER-123",
-                                   "api_key": "TEST-KEY-123",
-                                   "expiry_date": test_date.replace(' ', 'T')}
+        assert response.json()['message'] == "Success"
+        assert response.json()['new_user']['email'] == "TEST-MAIL-456@test3.com"
+        assert response.json()['new_user']['expiry_date'] == test_date.replace(' ', 'T')
+        assert isinstance(response.json()['new_user']['api_key'], str)
         
         # Verifying that a new user got added to the users table.
         check_tb_users = fake_db.query(Users).filter(Users.user_id == 3).first()
@@ -133,10 +136,16 @@ class TestPostAddUser():
         assert check_tb_users.can_read == True
         assert check_tb_users.can_write == False
 
+        # Verifying that a new key with corresponding user id got added to the apikeys table
+        check_tb_apikeys = fake_db.query(ApiKeys).filter(ApiKeys.user_id == 3).first()
+        assert check_tb_apikeys.user_id == 3
+        assert isinstance(check_tb_apikeys.api_key, str)
+
     def test_api_key_invalid(self, client_with_fake_db):
         response = client_with_fake_db.post(url='/add_user',
                                             headers={"api-key": "TEST-KEY-XYZ"},
-                                            json={"first_name": "FIRST-NAME-456",
+                                            json={"email": "TEST-MAIL-456@test3.com",
+                                                  "first_name": "FIRST-NAME-456",
                                                   "last_name": "LAST-NAME-456",
                                                   "is_admin": False,
                                                   "can_read": True,
@@ -176,7 +185,8 @@ class TestPostAddUser():
     def test_invalid_access_rights(self, client_with_fake_db):
         response = client_with_fake_db.post(url='/add_user',
                                             headers={"api-key": "TEST-KEY-789"},
-                                            json={"first_name": "FIRST-NAME-456",
+                                            json={"email": "TEST-MAIL-XYZ@test4.com",
+                                                  "first_name": "FIRST-NAME-456",
                                                   "last_name": "LAST-NAME-456",
                                                   "is_admin": False,
                                                   "can_read": True,
