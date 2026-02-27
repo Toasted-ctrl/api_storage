@@ -1,5 +1,4 @@
 from app.main import app
-from app.auth import hash_key
 from app.database import Ingest, Users, ApiKeys
 from fastapi.testclient import TestClient
 from datetime import datetime
@@ -9,9 +8,10 @@ client = TestClient(app=app)
 class TestHashedApiKey:
 
     def test_hashed_key(self, fake_db):
-        check_api_key_hash = fake_db.query(ApiKeys).filter(ApiKeys.user_id == 1).first()
-        assert check_api_key_hash.hashed_api_key == hash_key(key="TEST-KEY-123")
-        assert check_api_key_hash.hashed_api_key != "TEST-KEY-123"
+        check_api_key_hash_user_1 = fake_db.query(ApiKeys).filter(ApiKeys.user_id == 1).first()
+        assert check_api_key_hash_user_1.hashed_api_key == "3360cf424220348735283eac04c5c60af56bf993bfee236b7aa6739674923da3"
+        check_api_key_hash_user_2 = fake_db.query(ApiKeys).filter(ApiKeys.user_id == 2).first()
+        assert check_api_key_hash_user_2.hashed_api_key == "e3c4258019236928ff5e79fdaaa033d6e4a9b881b6eb080d8aba7768e434f752"
 
 class TestRoot:
 
