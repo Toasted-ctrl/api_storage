@@ -1,9 +1,17 @@
 from app.main import app
+from app.auth import hash_key
 from app.database import Ingest, Users, ApiKeys
 from fastapi.testclient import TestClient
 from datetime import datetime
 
 client = TestClient(app=app)
+
+class TestHashedApiKey:
+
+    def test_hashed_key(self, fake_db):
+        check_api_key_hash = fake_db.query(ApiKeys).filter(ApiKeys.user_id == 1).first()
+        assert check_api_key_hash.hashed_api_key == hash_key(key="TEST-KEY-123")
+        assert check_api_key_hash.hashed_api_key != "TEST-KEY-123"
 
 class TestRoot:
 
@@ -24,6 +32,7 @@ class TestHealth:
 class TestPostSingle:
 
     def test_success(self, client_with_fake_db, fake_db):
+
         response = client_with_fake_db.post(url='/single',
                                             headers={"api-key": "TEST-KEY-123"},
                                             json={"url_primary": "TEST-URL-123",
@@ -139,7 +148,8 @@ class TestPostAddUser():
         # Verifying that a new key with corresponding user id got added to the apikeys table
         check_tb_apikeys = fake_db.query(ApiKeys).filter(ApiKeys.user_id == 3).first()
         assert check_tb_apikeys.user_id == 3
-        assert isinstance(check_tb_apikeys.api_key, str)
+        assert isinstance(check_tb_apikeys.hashed_api_key, str)
+        assert response.json()['new_user']['api_key'] != check_tb_apikeys.hashed_api_key
 
     def test_api_key_invalid(self, client_with_fake_db):
         response = client_with_fake_db.post(url='/add_user',

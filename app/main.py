@@ -25,7 +25,7 @@ def single(payload: models.InputDataSingle,
            db: Session = Depends(get_database),
            api_key: str = Depends(api_key_header)):
     
-    user = auth.verify_api_key(database=db, api_key=api_key)
+    user = auth.verify_api_key(database=db, api_key=auth.hash_key(api_key))
     auth.verify_resource_access(database=db, user_id=user.user_id, can_write=True)
 
     # TODO: Maybe this needs to be its own function, and added to app.database?
@@ -53,7 +53,7 @@ def add_user(payload: models.InputNewUser,
              db: Session = Depends(get_database),
              api_key: str = Depends(api_key_header)):
     
-    user = auth.verify_api_key(database=db, api_key=api_key)
+    user = auth.verify_api_key(database=db, api_key=auth.hash_key(api_key))
     auth.verify_resource_access(database=db, user_id=user.user_id, is_admin=True)
 
     new_user = Users(
@@ -69,7 +69,6 @@ def add_user(payload: models.InputNewUser,
 
     # TODO: Implement error handling for if the new user cannot be located.
     # TODO: Implement rollback functionality
-    # TODO: Implement hashing so we don't store the raw key.
 
     # NOTE: .scalar() return the first column of the first result.
     # NOTE: Querying Users.user_id makes so we return only the user_id db column.
@@ -78,10 +77,10 @@ def add_user(payload: models.InputNewUser,
     if new_user_id == None:
         raise HTTPException(404, detail="Unexpected error: Unable to add new user")
     
-    generated_key = auth.generate_key(database=db)
+    generated_keys = auth.generate_key(database=db)
 
     new_key = ApiKeys(
-        api_key = generated_key,
+        hashed_api_key = generated_keys[1],
         user_id = new_user_id
     )
 
@@ -91,5 +90,5 @@ def add_user(payload: models.InputNewUser,
     return {"message": "Success",
             "new_user": {
                 "email": payload.email,
-                "api_key": generated_key,
+                "api_key": generated_keys[0],
                 "expiry_date": payload.expiry_date}}

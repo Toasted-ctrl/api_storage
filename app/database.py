@@ -35,7 +35,7 @@ def get_database():
 class ApiKeys(base):
     __tablename__ = 'api_keys'
 
-    api_key = Column(String(150), primary_key=True, nullable=False)
+    hashed_api_key = Column(String(150), primary_key=True, nullable=False)
     user_id = Column(Integer, nullable=False)
 
 class Users(base):
