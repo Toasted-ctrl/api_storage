@@ -204,3 +204,29 @@ class TestPostAddUser():
         
         assert response.status_code == 403
         assert response.json() == {"detail": "Forbidden"}
+
+class TestGetDataSources():
+
+    def test_success(self):
+        pass # Finalize test for successful query.
+
+    def test_api_key_missing(self, client_with_fake_db):
+        response = client_with_fake_db.get(url='/data/sources',
+                                            headers={})
+        
+        assert response.status_code == 401
+        assert response.json() == {"detail": "Not authenticated"}
+
+    def test_api_key_invalid(self, client_with_fake_db):
+        response = client_with_fake_db.get(url='/data/sources',
+                                           headers={"api-key": "RANDOM-TEST-KEY-123"})
+        
+        assert response.status_code == 401
+        assert response.json() == {"detail": "Invalid API key"}
+
+    def test_invalid_access_rights(self, client_with_fake_db):
+        response = client_with_fake_db.get(url='/data/sources',
+                                           headers={"api-key": "TEST-KEY-789"})
+        
+        assert response.status_code == 403
+        assert response.json() == {"detail": "Forbidden"}

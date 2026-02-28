@@ -31,7 +31,7 @@ def single(payload: models.InputDataSingle,
     # TODO: Maybe this needs to be its own function, and added to app.database?
 
     # NOTE: This will dump everything in single db.
-    # NOTE: ETL will be conducted at a later statge.
+    # NOTE: ETL will be conducted at a later stage.
     new_ingest_item = Ingest(
         url_primary = payload.url_primary,
         url_extension = payload.url_extension,
@@ -77,6 +77,7 @@ def add_user(payload: models.InputNewUser,
     if new_user_id == None:
         raise HTTPException(404, detail="Unexpected error: Unable to add new user")
     
+    # NOTE: Returns a tuple, with [0] being the user key, and [1] being the hashed key.
     generated_keys = auth.generate_key(database=db)
 
     new_key = ApiKeys(
@@ -92,3 +93,20 @@ def add_user(payload: models.InputNewUser,
                 "email": payload.email,
                 "api_key": generated_keys[0],
                 "expiry_date": payload.expiry_date}}
+
+# TODO: Build test suite for below function.
+@app.get('/data/sources', response_model=models.ReturnDataSources)
+def get_data_sources(db: Session = Depends(get_database),
+                     api_key = Depends(api_key_header)):
+    
+    user = auth.verify_api_key(database=db, api_key=auth.hash_key(api_key))
+    auth.verify_resource_access(database=db, user_id=user.user_id, can_read=True)
+
+    query = db.query(Ingest.url_primary, Ingest.url_extension).distinct().all()
+
+    # NOTE: Potential issue if we have multiple sources with the same primary url?
+    # TODO: Refine below so it aggregates extension under each unique primary url.
+    sources = {url_p: url_e for url_p, url_e in query}
+
+    return {"message": "Success",
+            "sources": sources}
