@@ -39,3 +39,7 @@ class InputNewUser(BaseModel):
 class ReturnNewUser(BaseModel):
     message: str
     new_user: dict
+
+class ReturnDataSources(BaseModel):
+    message: str
+    sources: dict
