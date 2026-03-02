@@ -29,11 +29,11 @@ class TestHealth:
         assert response.status_code == 200
         assert response.json() == {"status": "OK"}
 
-class TestPostSingle:
+class TestPostSingleEntry:
 
     def test_success(self, client_with_fake_db, fake_db):
 
-        response = client_with_fake_db.post(url='/single',
+        response = client_with_fake_db.post(url="/data/add_single",
                                             headers={"api-key": "TEST-KEY-123"},
                                             json={"url_primary": "TEST-URL-123",
                                                   "url_extension": "TEST-EXTENSION-123",
@@ -54,7 +54,7 @@ class TestPostSingle:
         
         # Verifying that the entry actually got added to the database
 
-        check_tb_ingest = fake_db.query(Ingest).first()
+        check_tb_ingest = fake_db.query(Ingest).filter(Ingest.item_id == 4).first()
         assert check_tb_ingest.url_primary == "TEST-URL-123"
         assert check_tb_ingest.url_extension == "TEST-EXTENSION-123"
         assert check_tb_ingest.params == {"param_item_1": "PARAM-ITEM-1-OK"}
@@ -62,7 +62,7 @@ class TestPostSingle:
         assert isinstance(check_tb_ingest.date_added, datetime)
 
     def test_api_key_invalid(self, client_with_fake_db):
-        response = client_with_fake_db.post(url='/single',
+        response = client_with_fake_db.post(url="/data/add_single",
                                             headers={"api-key": "TEST-KEY-XYZ"},
                                             json={"table": "TEST-TABLE-123",
                                                   "url_primary": "TEST-URL-123",
@@ -80,7 +80,7 @@ class TestPostSingle:
         # TODO: Replace with real test, for now pass.
 
     def test_api_key_missing(self, client_with_fake_db):
-        response = client_with_fake_db.post(url='/single',
+        response = client_with_fake_db.post(url="/data/add_single",
                                             headers={},
                                             json={"table": "TEST-TABLE-123",
                                                   "url": "TEST-URL-123",
@@ -91,13 +91,13 @@ class TestPostSingle:
         assert response.json() == {"detail": "Not authenticated"}
 
     def test_payload_missing(self, client_with_fake_db):
-        response = client_with_fake_db.post(url='/single',
+        response = client_with_fake_db.post(url="/data/add_single",
                                             headers={'api-key': "TEST-KEY-123"})
         
         assert response.status_code == 422
 
     def test_payload_incomplete(self, client_with_fake_db):
-        response = client_with_fake_db.post(url='/single',
+        response = client_with_fake_db.post(url="/data/add_single",
                                             headers={"api-key": "TEST-KEY-123"},
                                             json={"table": "TEST-TABLE-123",
                                                   "url": "TEST-URL-123"})
@@ -105,7 +105,7 @@ class TestPostSingle:
         assert response.status_code == 422
 
     def test_invalid_access_rights(self, client_with_fake_db):
-        response = client_with_fake_db.post(url='/single',
+        response = client_with_fake_db.post(url="/data/add_single",
                                             headers={"api-key": "TEST-KEY-789"},
                                             json={"table": "TEST-TABLE-123",
                                                   "url_primary": "TEST-URL-123",
@@ -121,7 +121,7 @@ class TestPostAddUser():
 
     def test_success(self, client_with_fake_db, fake_db):
         test_date = str(datetime.now())
-        response = client_with_fake_db.post(url='/add_user',
+        response = client_with_fake_db.post(url='/users/add_user',
                                             headers={"api-key": "TEST-KEY-123"},
                                             json={"email": "TEST-MAIL-456@test3.com",
                                                   "first_name": "FIRST-NAME-456",
@@ -152,7 +152,7 @@ class TestPostAddUser():
         assert response.json()['new_user']['api_key'] != check_tb_apikeys.hashed_api_key
 
     def test_api_key_invalid(self, client_with_fake_db):
-        response = client_with_fake_db.post(url='/add_user',
+        response = client_with_fake_db.post(url='/users/add_user',
                                             headers={"api-key": "TEST-KEY-XYZ"},
                                             json={"email": "TEST-MAIL-456@test3.com",
                                                   "first_name": "FIRST-NAME-456",
@@ -169,7 +169,7 @@ class TestPostAddUser():
         # TODO: Replace with real test, for now pass.
 
     def test_api_key_missing(self, client_with_fake_db):
-        response = client_with_fake_db.post(url='/add_user',
+        response = client_with_fake_db.post(url='/users/add_user',
                                             headers={},
                                             json={"first_name": "FIRST-NAME-456",
                                                   "last_name": "LAST-NAME-456",
@@ -179,13 +179,13 @@ class TestPostAddUser():
         assert response.json() == {"detail": "Not authenticated"}
 
     def test_payload_missing(self, client_with_fake_db):
-        response = client_with_fake_db.post(url='/add_user',
+        response = client_with_fake_db.post(url='/users/add_user',
                                             headers={"api-key": "TEST-KEY-123"})
         
         assert response.status_code == 422
 
     def test_payload_incomplete(self, client_with_fake_db):
-        response = client_with_fake_db.post(url='/add_user',
+        response = client_with_fake_db.post(url='/users/add_user',
                                             headers={"api-key": "TEST-KEY-123"},
                                             json={"last_name": "LAST-NAME-456",
                                                   "access_type": "Read-only"})
@@ -193,7 +193,7 @@ class TestPostAddUser():
         assert response.status_code == 422
 
     def test_invalid_access_rights(self, client_with_fake_db):
-        response = client_with_fake_db.post(url='/add_user',
+        response = client_with_fake_db.post(url='/users/add_user',
                                             headers={"api-key": "TEST-KEY-789"},
                                             json={"email": "TEST-MAIL-XYZ@test4.com",
                                                   "first_name": "FIRST-NAME-456",
@@ -207,8 +207,19 @@ class TestPostAddUser():
 
 class TestGetDataSources():
 
-    def test_success(self):
-        pass # Finalize test for successful query.
+    def test_success(self, client_with_fake_db):
+        response = client_with_fake_db.get(url='/data/sources',
+                                           headers={"api-key": "TEST-KEY-123"})
+        
+        assert response.status_code == 200
+        assert response.json() == {"message": "Success",
+                                   "sources": {
+                                       "test_url_1": [
+                                           "test_ext_1",
+                                           "test_ext_2"
+                                       ],
+                                       "test_url_2": [
+                                           "test_ext_1"]}}
 
     def test_api_key_missing(self, client_with_fake_db):
         response = client_with_fake_db.get(url='/data/sources',
@@ -226,6 +237,77 @@ class TestGetDataSources():
 
     def test_invalid_access_rights(self, client_with_fake_db):
         response = client_with_fake_db.get(url='/data/sources',
+                                           headers={"api-key": "TEST-KEY-789"})
+        
+        assert response.status_code == 403
+        assert response.json() == {"detail": "Forbidden"}
+
+class TestGetUsers():
+
+    def test_success(self, client_with_fake_db):
+        response = client_with_fake_db.get(url='/users',
+                                           headers={"api-key": "TEST-KEY-123"})
+        
+        assert response.status_code == 200
+        assert response.json() == {"message": "Success",
+                                   "users": {
+                                       "1": "TEST-MAIL-123@test.com",
+                                       "2": "TEST-MAIL-789@test2.com"}}
+        
+    def test_api_key_missing(self, client_with_fake_db):
+        response = client_with_fake_db.get(url='/users',
+                                            headers={})
+        
+        assert response.status_code == 401
+        assert response.json() == {"detail": "Not authenticated"}
+
+    def test_api_key_invalid(self, client_with_fake_db):
+        response = client_with_fake_db.get(url='/users',
+                                           headers={"api-key": "RANDOM-TEST-KEY-123"})
+        
+        assert response.status_code == 401
+        assert response.json() == {"detail": "Invalid API key"}
+
+    def test_invalid_access_rights(self, client_with_fake_db):
+        response = client_with_fake_db.get(url='/users',
+                                           headers={"api-key": "TEST-KEY-789"})
+        
+        assert response.status_code == 403
+        assert response.json() == {"detail": "Forbidden"}
+
+class TestGetUser():
+
+    def test_success(self, client_with_fake_db):
+        response = client_with_fake_db.get(url='/users/1',
+                                           headers={"api-key": "TEST-KEY-123"})
+        
+        assert response.status_code == 200
+        assert response.json() == {"message": "Success",
+                                   "user": {
+                                       "user_id": 1}}
+        
+    def test_incorrect_path_parameter(self, client_with_fake_db):
+        response = client_with_fake_db.get(url='users/t',
+                                           headers={"api-key": "TEST-KEY-123"})
+        
+        assert response.status_code == 422
+        
+    def test_api_key_missing(self, client_with_fake_db):
+        response = client_with_fake_db.get(url='/users/1',
+                                            headers={})
+        
+        assert response.status_code == 401
+        assert response.json() == {"detail": "Not authenticated"}
+
+    def test_api_key_invalid(self, client_with_fake_db):
+        response = client_with_fake_db.get(url='/users/1',
+                                           headers={"api-key": "RANDOM-TEST-KEY-123"})
+        
+        assert response.status_code == 401
+        assert response.json() == {"detail": "Invalid API key"}
+
+    def test_invalid_access_rights(self, client_with_fake_db):
+        response = client_with_fake_db.get(url='/users/1',
                                            headers={"api-key": "TEST-KEY-789"})
         
         assert response.status_code == 403

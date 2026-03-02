@@ -43,3 +43,11 @@ class ReturnNewUser(BaseModel):
 class ReturnDataSources(BaseModel):
     message: str
     sources: dict
+
+class ReturnUsers(BaseModel):
+    message: str
+    users: dict
+
+class ReturnUser(BaseModel):
+    message: str
+    user: dict

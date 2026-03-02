@@ -8,20 +8,20 @@ from sqlalchemy.orm import Session
 app = FastAPI(version="0.0.1", contact={"maintainer": "Toasted-ctrl"})
 api_key_header = APIKeyHeader(name="api-key")
     
-@app.get("/", response_model = models.ReturnRoot)
-def root():
+@app.get("/", response_model = models.ReturnRoot, tags=["Default"])
+def get_root():
     
     return {"message": "Hello There",
             "version": app.version,
             "contact": app.contact}
 
-@app.get("/health", response_model=models.ReturnHealth)
-def health():
+@app.get("/health", response_model=models.ReturnHealth, tags=["Default"])
+def get_health():
     
     return {"status": "OK"}
 
-@app.post("/single", response_model = models.ReturnDataSingle)
-def single(payload: models.InputDataSingle,
+@app.post("/data/add_single", response_model=models.ReturnDataSingle, tags=["Data"])
+def post_single(payload: models.InputDataSingle,
            db: Session = Depends(get_database),
            api_key: str = Depends(api_key_header)):
     
@@ -48,8 +48,56 @@ def single(payload: models.InputDataSingle,
             "params": payload.params,
             "data": payload.data}
 
-@app.post("/add_user", response_model = models.ReturnNewUser)
-def add_user(payload: models.InputNewUser,
+@app.get('/data/sources', response_model=models.ReturnDataSources, tags = ["Data"])
+def get_data_sources(db: Session = Depends(get_database),
+                     api_key = Depends(api_key_header)):
+    
+    user = auth.verify_api_key(database=db, api_key=auth.hash_key(api_key))
+    auth.verify_resource_access(database=db, user_id=user.user_id, can_read=True)
+
+    query = db.query(Ingest.url_primary, Ingest.url_extension).distinct().all()
+
+    sources = {}
+    for url_p, url_e in query:
+        if url_p not in sources:
+            sources[url_p] = []
+            sources[url_p].append(url_e)
+        else:
+            sources[url_p].append(url_e)
+
+    return {"message": "Success",
+            "sources": sources}
+
+@app.get('/users', response_model=models.ReturnUsers, tags=["Users"])
+def get_users(db: Session = Depends(get_database),
+              api_key = Depends(api_key_header)):
+    
+    user = auth.verify_api_key(database=db, api_key=auth.hash_key(api_key))
+    auth.verify_resource_access(database=db, user_id=user.user_id, is_admin=True)
+
+    query = db.query(Users.user_id, Users.email).distinct().all()
+
+    users = {}
+    for u_id, u_mail in query:
+        users[u_id] = u_mail
+
+    return {"message": "Success",
+            "users": users}
+
+@app.get("/users/{user_id}", response_model=models.ReturnUser, tags=["Users"])
+def get_user(user_id: int,
+             db: Session = Depends(get_database),
+             api_key = Depends(api_key_header)):
+    
+    user = auth.verify_api_key(database=db, api_key=auth.hash_key(api_key))
+    auth.verify_resource_access(database=db, user_id=user.user_id, is_admin=True)
+
+    return {"message": "Success",
+            "user": {
+                "user_id": user_id}}
+
+@app.post("/users/add_user", response_model=models.ReturnNewUser, tags=["Users"])
+def post_user(payload: models.InputNewUser,
              db: Session = Depends(get_database),
              api_key: str = Depends(api_key_header)):
     
@@ -93,20 +141,3 @@ def add_user(payload: models.InputNewUser,
                 "email": payload.email,
                 "api_key": generated_keys[0],
                 "expiry_date": payload.expiry_date}}
-
-# TODO: Build test suite for below function.
-@app.get('/data/sources', response_model=models.ReturnDataSources)
-def get_data_sources(db: Session = Depends(get_database),
-                     api_key = Depends(api_key_header)):
-    
-    user = auth.verify_api_key(database=db, api_key=auth.hash_key(api_key))
-    auth.verify_resource_access(database=db, user_id=user.user_id, can_read=True)
-
-    query = db.query(Ingest.url_primary, Ingest.url_extension).distinct().all()
-
-    # NOTE: Potential issue if we have multiple sources with the same primary url?
-    # TODO: Refine below so it aggregates extension under each unique primary url.
-    sources = {url_p: url_e for url_p, url_e in query}
-
-    return {"message": "Success",
-            "sources": sources}

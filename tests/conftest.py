@@ -14,7 +14,7 @@ from fastapi.testclient import TestClient
 
 from app.auth import hash_key
 from app.main import app, get_database
-from app.database import base, ApiKeys, Users
+from app.database import base, ApiKeys, Users, Ingest
 
 test_in_memory_db_url = "sqlite:///:memory:" # Will create an in-memory db
 test_engine = create_engine(test_in_memory_db_url,
@@ -72,6 +72,33 @@ def fake_db():
                                    can_write=False)
     
     db_session.add(new_permissions_user_2)
+    db_session.commit()
+
+    test_data_1 = Ingest(url_primary='test_url_1',
+                           url_extension='test_ext_1',
+                           params=None,
+                           status_code=200,
+                           data=None)
+        
+    db_session.add(test_data_1)
+    db_session.commit()
+        
+    test_data_2 = Ingest(url_primary='test_url_1',
+                           url_extension='test_ext_2',
+                           params=None,
+                           status_code=200,
+                           data=None)
+        
+    db_session.add(test_data_2)
+    db_session.commit()
+        
+    test_data_3 = Ingest(url_primary='test_url_2',
+                           url_extension='test_ext_1',
+                           params=None,
+                           status_code=200,
+                           data=None)
+        
+    db_session.add(test_data_3)
     db_session.commit()
 
     yield db_session
