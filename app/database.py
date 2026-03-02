@@ -58,7 +58,7 @@ class Ingest(base):
     url_extension = Column(String(100), nullable=True)
     params = Column(JSON, nullable=True)
     status_code = Column(Integer, nullable=False)
-    data = Column(JSON, nullable=False)
+    data = Column(JSON, nullable=True)
 
     # Will add datetime of when the entry was added on the server side.
     date_added = Column(DateTime(timezone=False), server_default=func.now(), nullable=False)
