@@ -130,7 +130,8 @@ def post_user(payload: models.InputNewUser,
 
     new_key = ApiKeys(
         hashed_api_key = generated_keys[1],
-        user_id = new_user_id
+        user_id = new_user_id,
+        is_valid = True
     )
 
     db.add(new_key)
@@ -139,5 +140,4 @@ def post_user(payload: models.InputNewUser,
     return {"message": "Success",
             "new_user": {
                 "email": payload.email,
-                "api_key": generated_keys[0],
-                "expiry_date": payload.expiry_date}}
+                "api_key": generated_keys[0]}}
