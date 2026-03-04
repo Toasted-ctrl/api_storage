@@ -59,7 +59,7 @@ class TestPostSingleEntry:
         assert check_tb_ingest.url_extension == "TEST-EXTENSION-123"
         assert check_tb_ingest.params == {"param_item_1": "PARAM-ITEM-1-OK"}
         assert check_tb_ingest.data == {"data_item_1": "DATA-ITEM-1-OK"}
-        assert isinstance(check_tb_ingest.date_added, datetime)
+        assert isinstance(check_tb_ingest.date_created, datetime)
 
     def test_api_key_invalid(self, client_with_fake_db):
         response = client_with_fake_db.post(url="/data/add_single",
@@ -120,7 +120,6 @@ class TestPostSingleEntry:
 class TestPostAddUser():
 
     def test_success(self, client_with_fake_db, fake_db):
-        test_date = str(datetime.now())
         response = client_with_fake_db.post(url='/users/add_user',
                                             headers={"api-key": "TEST-KEY-123"},
                                             json={"email": "TEST-MAIL-456@test3.com",
@@ -128,13 +127,11 @@ class TestPostAddUser():
                                                   "last_name": "LAST-NAME-456",
                                                   "is_admin": False,
                                                   "can_read": True,
-                                                  "can_write": False,
-                                                  "expiry_date": test_date})
+                                                  "can_write": False})
         
         assert response.status_code == 200
         assert response.json()['message'] == "Success"
         assert response.json()['new_user']['email'] == "TEST-MAIL-456@test3.com"
-        assert response.json()['new_user']['expiry_date'] == test_date.replace(' ', 'T')
         assert isinstance(response.json()['new_user']['api_key'], str)
         
         # Verifying that a new user got added to the users table.
@@ -216,8 +213,7 @@ class TestGetDataSources():
                                    "sources": {
                                        "test_url_1": [
                                            "test_ext_1",
-                                           "test_ext_2"
-                                       ],
+                                           "test_ext_2"],
                                        "test_url_2": [
                                            "test_ext_1"]}}
 
