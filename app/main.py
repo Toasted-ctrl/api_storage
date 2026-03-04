@@ -84,12 +84,29 @@ def get_users(db: Session = Depends(get_database),
     return {"message": "Success",
             "users": users}
 
+# TODO: Build tests for this function
+@app.delete("/users/{user_id}", response_model=models.ReturnSimple, tags=["Users"])
+def delete_user(user_id: int,
+                db: Session = Depends(get_database),
+                api_key = Depends(api_key_header)):
+    
+    user = auth.verify_api_key(database=db, api_key=auth.hash_key(key=api_key))
+    auth.verify_resource_access(database=db, user_id=user.user_id, is_admin=True)
+
+    verify_user = db.query(Users).filter(Users.user_id == user_id).first()
+    if verify_user != None:
+        db.delete(Users).where(Users.user_id == user_id)
+        return {"message": "Success"}
+    
+    else:
+        raise HTTPException(status_code=404, detail="User does not exist")
+
 @app.get("/users/{user_id}", response_model=models.ReturnUser, tags=["Users"])
 def get_user(user_id: int,
              db: Session = Depends(get_database),
              api_key = Depends(api_key_header)):
     
-    user = auth.verify_api_key(database=db, api_key=auth.hash_key(api_key))
+    user = auth.verify_api_key(database=db, api_key=auth.hash_key(key=api_key))
     auth.verify_resource_access(database=db, user_id=user.user_id, is_admin=True)
 
     return {"message": "Success",
