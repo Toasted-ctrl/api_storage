@@ -1,6 +1,4 @@
 from pydantic import BaseModel
-from datetime import datetime
-from dateutil.relativedelta import relativedelta
 
 class ReturnRoot(BaseModel):
     message: str
@@ -34,7 +32,6 @@ class InputNewUser(BaseModel):
     is_admin: bool
     can_write: bool
     can_read: bool
-    expiry_date: datetime | None = datetime.now() + relativedelta(months=6)
 
 class ReturnNewUser(BaseModel):
     message: str
