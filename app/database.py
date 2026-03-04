@@ -37,6 +37,8 @@ class ApiKeys(base):
 
     hashed_api_key = Column(String(150), primary_key=True, nullable=False)
     user_id = Column(Integer, nullable=False)
+    is_valid = Column(Boolean, nullable=False)
+    date_created = Column(DateTime(timezone=False), server_default=func.now(), nullable=False)
 
 class Users(base):
     __tablename__ = 'users'
@@ -61,6 +63,6 @@ class Ingest(base):
     data = Column(JSON, nullable=True)
 
     # Will add datetime of when the entry was added on the server side.
-    date_added = Column(DateTime(timezone=False), server_default=func.now(), nullable=False)
+    date_created = Column(DateTime(timezone=False), server_default=func.now(), nullable=False)
 
 #base.metadata.create_all(engine)

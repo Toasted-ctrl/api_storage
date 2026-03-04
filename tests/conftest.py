@@ -41,7 +41,8 @@ def fake_db():
     # Adding user 1 api key and access rights
 
     new_api_key_user_1 = ApiKeys(hashed_api_key=hash_key("TEST-KEY-123"),
-                                 user_id=1)
+                                 user_id=1,
+                                 is_valid=True)
     
     db_session.add(new_api_key_user_1)
     db_session.commit()
@@ -59,7 +60,8 @@ def fake_db():
     # Adding user 2 api key and access rights
 
     new_api_key_user_2 = ApiKeys(hashed_api_key=hash_key("TEST-KEY-789"),
-                                 user_id=2)
+                                 user_id=2,
+                                 is_valid=True)
     
     db_session.add(new_api_key_user_2)
     db_session.commit()
