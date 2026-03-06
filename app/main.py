@@ -92,11 +92,10 @@ def retire_user(user_id: int,
     user = auth.verify_api_key(database=db, api_key=auth.hash_key(key=api_key))
     auth.verify_resource_access(database=db, user_id=user.user_id, is_admin=True)
 
-    verify_user = db.query(Users).filter(Users.user_id == user_id).first()
-    if verify_user != None:
-
-        # NOTE: Update should use a dictionary
-        db.query(Users).filter(Users.user_id == user_id).update({Users.is_active: False})
+    user = db.query(Users).filter(Users.user_id == user_id).first()
+    if user:
+        # NOTE: If a user is located, we can just set the attribute is_active to False.
+        user.is_active = False
         db.commit()
         return {"message": "Success"}
     else:
