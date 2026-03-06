@@ -48,7 +48,7 @@ def post_single(payload: models.InputDataSingle,
             "params": payload.params,
             "data": payload.data}
 
-@app.get('/data/sources', response_model=models.ReturnDataSources, tags = ["Data"])
+@app.get("/data/sources", response_model=models.ReturnDataSources, tags = ["Data"])
 def get_data_sources(db: Session = Depends(get_database),
                      api_key = Depends(api_key_header)):
     
@@ -68,7 +68,7 @@ def get_data_sources(db: Session = Depends(get_database),
     return {"message": "Success",
             "sources": sources}
 
-@app.get('/users', response_model=models.ReturnUsers, tags=["Users"])
+@app.get("/users", response_model=models.ReturnUsers, tags=["Users"])
 def get_users(db: Session = Depends(get_database),
               api_key = Depends(api_key_header)):
     
@@ -84,9 +84,8 @@ def get_users(db: Session = Depends(get_database),
     return {"message": "Success",
             "users": users}
 
-# TODO: Build tests for this function
-@app.delete("/users/{user_id}", response_model=models.ReturnSimple, tags=["Users"])
-def delete_user(user_id: int,
+@app.put("/users/retire/{user_id}", response_model=models.ReturnSimple, tags=["Users"])
+def retire_user(user_id: int,
                 db: Session = Depends(get_database),
                 api_key = Depends(api_key_header)):
     
@@ -95,9 +94,11 @@ def delete_user(user_id: int,
 
     verify_user = db.query(Users).filter(Users.user_id == user_id).first()
     if verify_user != None:
-        db.delete(Users).where(Users.user_id == user_id)
+
+        # NOTE: Update should use a dictionary
+        db.query(Users).filter(Users.user_id == user_id).update({Users.is_active: False})
+        db.commit()
         return {"message": "Success"}
-    
     else:
         raise HTTPException(status_code=404, detail="User does not exist")
 
@@ -115,8 +116,8 @@ def get_user(user_id: int,
 
 @app.post("/users/add_user", response_model=models.ReturnNewUser, tags=["Users"])
 def post_user(payload: models.InputNewUser,
-             db: Session = Depends(get_database),
-             api_key: str = Depends(api_key_header)):
+              db: Session = Depends(get_database),
+              api_key: str = Depends(api_key_header)):
     
     user = auth.verify_api_key(database=db, api_key=auth.hash_key(api_key))
     auth.verify_resource_access(database=db, user_id=user.user_id, is_admin=True)
@@ -127,7 +128,8 @@ def post_user(payload: models.InputNewUser,
         last_name = payload.last_name,
         is_admin = payload.is_admin,
         can_read = payload.can_read,
-        can_write = payload.can_write)
+        can_write = payload.can_write,
+        is_active = True)
 
     db.add(new_user)
     db.commit()
@@ -140,7 +142,7 @@ def post_user(payload: models.InputNewUser,
     new_user_id = db.query(Users.user_id).filter(Users.email == payload.email).scalar()
 
     if new_user_id == None:
-        raise HTTPException(404, detail="Unexpected error: Unable to add new user")
+        raise HTTPException(status_code=404, detail="Unexpected error: Unable to add new user")
     
     # NOTE: Returns a tuple, with [0] being the user key, and [1] being the hashed key.
     generated_keys = auth.generate_key(database=db)

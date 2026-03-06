@@ -197,7 +197,8 @@ class TestPostAddUser():
                                                   "last_name": "LAST-NAME-456",
                                                   "is_admin": False,
                                                   "can_read": True,
-                                                  "can_write": False})
+                                                  "can_write": False,
+                                                  "is_active": True})
         
         assert response.status_code == 403
         assert response.json() == {"detail": "Forbidden"}
@@ -304,6 +305,45 @@ class TestGetUser():
 
     def test_invalid_access_rights(self, client_with_fake_db):
         response = client_with_fake_db.get(url='/users/1',
+                                           headers={"api-key": "TEST-KEY-789"})
+        
+        assert response.status_code == 403
+        assert response.json() == {"detail": "Forbidden"}
+
+class TestRetireUser():
+
+    def test_success(self, client_with_fake_db, fake_db):
+        assert fake_db.query(Users).filter(Users.user_id == 2).first() != None
+        response = client_with_fake_db.put(url='/users/retire/2',
+                                           headers={"api-key": "TEST-KEY-123"})
+        
+        assert response.status_code == 200
+        assert response.json() == {"message": "Success"}
+        assert fake_db.query(Users).filter(Users.user_id == 2).first().is_active == False
+
+    def test_nonexistant_user(self, client_with_fake_db):
+        response = client_with_fake_db.put(url='users/retire/7',
+                                           headers={"api-key": "TEST-KEY-123"})
+        
+        assert response.status_code == 404
+        assert response.json() == {"detail": "User does not exist"}
+
+    def test_api_key_missing(self, client_with_fake_db):
+        response = client_with_fake_db.put(url='/users/retire/2',
+                                           headers={})
+        
+        assert response.status_code == 401
+        assert response.json() == {"detail": "Not authenticated"}
+
+    def test_api_key_invalid(self, client_with_fake_db):
+        response = client_with_fake_db.put(url='/users/retire/2',
+                                           headers={"api-key": "RANDOM-TEST-KEY-123"})
+        
+        assert response.status_code == 401
+        assert response.json() == {"detail": "Invalid API key"}
+
+    def test_invalid_access_rights(self, client_with_fake_db):
+        response = client_with_fake_db.put(url='/users/retire/2',
                                            headers={"api-key": "TEST-KEY-789"})
         
         assert response.status_code == 403

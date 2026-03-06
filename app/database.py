@@ -51,6 +51,7 @@ class Users(base):
     is_admin = Column(Boolean, nullable=False)
     can_read = Column(Boolean, nullable=False)
     can_write = Column(Boolean, nullable=False)
+    is_active = Column(Boolean, nullable=False)
 
 class Ingest(base):
     __tablename__ = 'ingest'

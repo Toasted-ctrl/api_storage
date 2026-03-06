@@ -52,7 +52,8 @@ def fake_db():
                                    last_name="LAST-NAME-123",
                                    is_admin=True,
                                    can_read=True,
-                                   can_write=True)
+                                   can_write=True,
+                                   is_active=True)
     
     db_session.add(new_permissions_user_1)
     db_session.commit()
@@ -71,7 +72,8 @@ def fake_db():
                                    last_name="LAST-NAME-789",
                                    is_admin=False,
                                    can_read=False,
-                                   can_write=False)
+                                   can_write=False,
+                                   is_active=True)
     
     db_session.add(new_permissions_user_2)
     db_session.commit()
