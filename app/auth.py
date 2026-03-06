@@ -19,13 +19,13 @@ def verify_resource_access(database: Session,
                   is_admin: bool | None = None) -> bool:
     
     if can_read != None and can_write == None and is_admin == None:
-        query_result = database.query(Users).filter(Users.user_id == user_id, Users.can_read == can_read).first()
+        query_result = database.query(Users).filter(Users.user_id == user_id, Users.can_read == can_read, Users.is_active == True).first()
 
     elif can_read == None and can_write != None and is_admin == None:
-        query_result = database.query(Users).filter(Users.user_id == user_id, Users.can_write == can_write).first()
+        query_result = database.query(Users).filter(Users.user_id == user_id, Users.can_write == can_write, Users.is_active == True).first()
         
     elif is_admin != None:
-        query_result = database.query(Users).filter(Users.user_id == user_id, Users.is_admin == is_admin).first()
+        query_result = database.query(Users).filter(Users.user_id == user_id, Users.is_admin == is_admin, Users.is_active == True).first()
 
     if query_result == None:
         raise HTTPException(403)
