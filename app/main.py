@@ -29,10 +29,8 @@ def post_data(payload: models.InputAddData,
     auth.verify_resource_access(database=db, user_id=v_key.user_id, can_write=True)
 
     # NOTE: ETL will be conducted at a later stage.
-    for item in payload.entries:
-        ingest_data = Ingest(**item.model_dump())
-        db.add(ingest_data)
-        db.commit()
+    db.add_all([Ingest(**entry.model_dump()) for entry in payload.entries])
+    db.commit()
     
     return {"message": "Success",
             "entries": payload.entries}
