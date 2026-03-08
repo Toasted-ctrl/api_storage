@@ -1,4 +1,6 @@
-# Test file
+# Test files
+tests/
+conftest.py
 test_main.py
 
 # Docker files
@@ -12,3 +14,6 @@ __pychache__/
 # Git files
 .git
 .gitignore
+
+# License files
+LICENSE*
