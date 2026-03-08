@@ -1,12 +1,9 @@
 import os
 
 from dotenv import load_dotenv
-
-# func is function on the server side
-# JSON data may be added by using dicts
-
 from sqlalchemy import create_engine, Column, Integer, String, Boolean, JSON, DateTime, func
 from sqlalchemy.orm import sessionmaker, declarative_base
+# func is database server functions.
 
 load_dotenv()
 
@@ -62,8 +59,4 @@ class Ingest(base):
     params = Column(JSON, nullable=True)
     status_code = Column(Integer, nullable=False)
     data = Column(JSON, nullable=True)
-
-    # Will add datetime of when the entry was added on the server side.
     date_created = Column(DateTime(timezone=False), server_default=func.now(), nullable=False)
-
-#base.metadata.create_all(engine)
