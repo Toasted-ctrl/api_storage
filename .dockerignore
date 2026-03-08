@@ -17,3 +17,6 @@ __pychache__/
 
 # License files
 LICENSE*
+
+# Database table initialization file
+init_database.py
