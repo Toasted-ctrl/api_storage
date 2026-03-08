@@ -44,7 +44,7 @@ def get_data_sources(db: Session = Depends(get_database),
 
     sources = db.query(Ingest.url_primary, Ingest.url_extension).distinct().all()
     if not sources:
-        raise HTTPException(status_code=404, detail="Ingest database empty")
+        raise HTTPException(status_code=404, detail="Ingest table empty")
 
     return {"message": "Success",
             "sources": sources}
@@ -77,7 +77,7 @@ def post_user(payload: models.InputNewUser,
 
     user = db.query(Users).filter(Users.email == payload.email).first()
     if not user:
-        raise HTTPException(status_code=404, detail="Unexpected error: Unable to add new user")
+        raise HTTPException(status_code=404, detail="Unable to add new user")
     
     # NOTE: Returns a tuple, with [0] being the user key, and [1] being the hashed key.
     n_keys = auth.generate_key(database=db)
@@ -111,7 +111,7 @@ def update_user(user_id: int,
     
     updates = payload.model_dump(exclude_none=True)
     if not updates:
-        raise HTTPException(status_code=400, detail="No updates provided")
+        raise HTTPException(status_code=400, detail="No updates")
     
     for item, value in updates.items():
         setattr(user, item, value)

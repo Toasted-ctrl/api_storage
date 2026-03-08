@@ -241,7 +241,7 @@ class TestGetDataSources():
                                            headers={"api-key": "TEST-KEY-123"})
         
         assert response.status_code == 404
-        assert response.json() == {"detail": "Ingest database empty"}
+        assert response.json() == {"detail": "Ingest table empty"}
 
     def test_api_key_missing(self, client_with_fake_db):
         response = client_with_fake_db.get(url='/data/sources',
