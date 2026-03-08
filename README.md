@@ -33,3 +33,7 @@ To create all required tables without having to manually add them yourself, dire
 - "User_first_name"
 - "User_last_name"
 - "User-email
+## Tests
+To run tests run pytest from the main directory, run "pytest -v" or "pytest --v". The test will create and discard an in-memory sqlite database, having a database with all tables presents already established is not required.
+## Starting the API
+To run the api, either create and run it as a docker container using the added Dockerfile, or run "uvicorn app.main:app --reload" from the main directory
