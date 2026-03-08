@@ -16,7 +16,7 @@ You must already have a database instance running, including the following table
 - api_keys
 - users
 - ingest<br />
-You may generate these tables as well as add a system user without adding them manually to the database. Please see 'Initialize tables' to proceed.
+\You may generate these tables as well as add a system user without adding them manually to the database. Please see 'Initialize tables' to proceed.
 ### .env
 The .env file must include:
 - hostname
@@ -26,7 +26,7 @@ The .env file must include:
 - port
 - db_type: i.e., 'postgresql' using this stack
 - dbconnection: i.e., 'psycopg2' using this stack<br />
-The .env file must be added to the main directory.
+\The .env file must be added to the main directory.
 ### Initialize tables
 To create all required tables without having to manually add them yourself, directly run app/init_database.py. Make sure that the .env file described is present. If you also wish to add a main admin user from the beginning, add the following to the .env file:
 - "ApiKey_key_hashed" > a hashed api key (SHA256) for your main system user
