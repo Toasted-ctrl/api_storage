@@ -29,7 +29,7 @@ The .env file must include:
 The .env file must be added to the main directory.
 ### Initialize tables
 To create all required tables without having to manually add them yourself, directly run app/init_database.py. Make sure that the .env file described is present. If you also wish to add a main admin user from the beginning, add the following to the .env file:
-- "ApiKey_key_hashed" > a hashed api key for your main system user
+- "ApiKey_key_hashed" > a hashed api key (SHA256) for your main system user
 - "User_first_name"
 - "User_last_name"
 - "User-email
