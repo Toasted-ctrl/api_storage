@@ -11,7 +11,7 @@ In this tool I also wanted to cover management functions, such as authentication
 - Docker
 - Pydantic
 ## Requirements
-Make sure to set the pythonpath to \\api_storage\\src.
+*Make sure to set the pythonpath to \\api_storage\\src.*
 ### Database
 You must already have a database instance running, including the following tables from the 'database.py' file:
 - api_keys
