@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
-from src.models.root import ReturnRoot
-from src.core.config import config
+from models.root import ReturnRoot
+from core.config import config
 
 router = APIRouter()
 

@@ -1,7 +1,7 @@
 from fastapi import Depends, HTTPException, status
 
-from src.auth.dependencies import get_user
-from src.database.schema import Users
+from auth.dependencies import get_user
+from database.schema import Users
 
 def require_permission(admin: bool = False,
                        read: bool = False,

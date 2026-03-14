@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 
-from src.api.v1 import user, data, status, root
-from src.core.config import config
+from api.v1 import user, data, status, root
+from core.config import config
 #from app.database2.schema import Base
 #from app.database2.session import engine
 

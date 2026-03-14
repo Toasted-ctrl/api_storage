@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from src.database.schema import Ingest
+from database.schema import Ingest
 
 class DataService:
     def __init__(self, session: Session):

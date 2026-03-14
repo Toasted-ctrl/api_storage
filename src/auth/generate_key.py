@@ -1,9 +1,9 @@
 import secrets
 
-from src.auth.hashing import hash_sha256
+from auth.hashing import hash_sha256
 
 def generate_keys() -> tuple[str, str]:
-    
+
     """
     Returns a tuple, where [0] is the key, and [1] the hashed key
     """

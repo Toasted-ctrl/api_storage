@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 
-from src.auth.permissions import require_permission
-from src.database.session import get_db
-from src.models.data import PayloadDataEntries, ReturnSources, ReturnDataEntries
-from src.services.data_service import DataService
+from auth.permissions import require_permission
+from database.session import get_db
+from models.data import PayloadDataEntries, ReturnSources, ReturnDataEntries
+from services.data_service import DataService
 
 router = APIRouter()
 tags = ["Data"]

@@ -3,9 +3,9 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import APIKeyHeader
 from sqlalchemy.orm import Session
 
-from src.auth.hashing import hash_sha256
-from src.database.schema import ApiKeys, Users
-from src.database.session import get_db
+from auth.hashing import hash_sha256
+from database.schema import ApiKeys, Users
+from database.session import get_db
 
 api_key_header = APIKeyHeader(name="X-api-key", auto_error=False)
 
