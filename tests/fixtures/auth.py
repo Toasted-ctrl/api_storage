@@ -22,6 +22,14 @@ def read_only_user():
     )
 
 @pytest.fixture
+def no_access_user():
+    return SimpleNamespace(
+        is_admin=False,
+        can_write=False,
+        can_read=False
+    )
+
+@pytest.fixture
 def override_user(app):
     """
     Allows tests to override the authenticated user dynamically.
