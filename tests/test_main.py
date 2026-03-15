@@ -20,7 +20,7 @@ def test_endpoint_status(client):
         "message": "OK"
     }
 
-def test_endpoints_root(client):
+def test_endpoint_root(client):
     response = client.get("/api/v1/")
     assert response.status_code == 200
     assert response.json() == {
