@@ -83,7 +83,35 @@ class TestPostData:
 
 class TestGetDataSources:
 
-    
+    def test_success(self, client, override_user, admin_user, override_data_service):
+
+        override_user(admin_user)
+        response = client.get("/api/v1/data/sources")
+        assert response.status_code == 200
+        assert response.json() == {
+            "detail": "Success",
+            "sources": [
+                {
+                    "base_url": "TEST_BASE_URL",
+                    "url_ext": None
+                }
+            ]
+        }
+
+    def test_user_permissions_incorrect(self, client, override_user, no_access_user):
+        override_user(no_access_user)
+        response = client.get("/api/v1/data/sources")
+        assert response.status_code == 403
+        assert response.json() == {
+            "detail": "Read permission required"
+        }
+
+    def test_api_key_missing(self, client):
+        response = client.get("/api/v1/data/sources")
+        assert response.status_code == 401
+        assert response.json() == {
+            "detail": "Missing API key"
+        }
 
     remaining_permission_errors_data = [
         ((403, "Invalid API key"), (403, {"detail": "Invalid API key"})),
