@@ -11,9 +11,10 @@ In this tool I also wanted to cover management functions, such as authentication
 - Docker
 - Pydantic
 ## Requirements
-*Make sure to set the pythonpath to \\api_storage\\src.*
+*Make sure to set the pythonpath to \\api_storage\\src.*:
+- Windows: $env:PYTHONPATH="src"
 ### Database
-You must already have a database instance running, including the following tables from the 'database.py' file:
+You must already have a database instance running, including the following tables from the 'src.database.schema' file:
 - api_keys
 - users
 - ingest
@@ -31,12 +32,12 @@ The .env file must include:
 ##### > Note:
 The .env file must be added to the main directory.
 ### Initialize tables
-To create all required tables without having to manually add them yourself, directly run app/init_database.py. Make sure that the .env file described is present. If you also wish to add a main admin user from the beginning, add the following to the .env file:
+To create all required tables without having to manually add them yourself, directly run src/init_db. Make sure that the .env file described is present. If you also wish to add a main admin user from the beginning, add the following to the .env file:
 - "ApiKey_key_hashed" > a hashed api key (SHA256) for your main system user
 - "User_first_name"
 - "User_last_name"
 - "User-email
 ## Tests
-To run tests run pytest from the main directory, run "pytest -v" or "pytest --v". The test will create and discard an in-memory sqlite database, having a database with all tables presents already established is not required.
+To run tests run pytest from the main directory, run "pytest -v" or "pytest -vv". The test will create and discard an in-memory sqlite database, having a database with all tables presents already established is not required. *Also make sure that \\api_storage\\src is set as python path as described above.*
 ## Starting the API
-To run the api, either create and run it as a docker container using the added Dockerfile, or run "uvicorn main:app --reload" from the main directory.
+To run the api, either build and run it as a docker container using the added Dockerfile, or run "uvicorn main:app --reload" from the main directory.
