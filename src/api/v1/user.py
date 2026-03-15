@@ -38,3 +38,4 @@ def post_user(payload: PayloadNewUser, user_service: UserService = Depends(get_u
     }
 
 # TODO: Add function to update user.
+# TODO: Add function to fetch one user's information.

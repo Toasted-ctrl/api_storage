@@ -14,4 +14,5 @@ def get_root():
         "version": config.app_version,
         "contact": {
             "maintainer": config.app_maintainer
-        }}
+        }
+    }
