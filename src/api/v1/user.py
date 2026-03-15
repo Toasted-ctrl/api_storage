@@ -28,7 +28,6 @@ def post_user(payload: PayloadNewUser, user_service: UserService = Depends(get_u
     new_user = user_service.post_user(data=payload.model_dump())
     if not new_user:
         raise HTTPException(status_code=500, detail="Unable to add user")
-
     return {
         "detail": "Success",
         "new_user": {
