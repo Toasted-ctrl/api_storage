@@ -16,7 +16,7 @@ class ReturnDataEntries(BaseModel):
 
 class Source(BaseModel):
     base_url: str
-    url_ext: str
+    url_ext: str | None
 
 class ReturnSources(BaseModel):
     detail: str
