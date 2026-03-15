@@ -10,7 +10,7 @@ class UserDetailed(BaseModel):
 
 class UserSimple(BaseModel):
     email: str
-    id: int
+    user_id: int
 
 class PayloadNewUser(BaseModel):
     first_name: str
