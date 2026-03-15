@@ -28,7 +28,7 @@ async def get_user(db: Session=Depends(get_db),
         .filter(
             ApiKeys.hashed_api_key == hashed_key,
             ApiKeys.is_valid == True)
-        .first()
+        .scalar()
     )
 
     if not id:
