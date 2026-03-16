@@ -2,7 +2,7 @@ import pytest
 
 class TestPostData:
 
-    def test_post_data_success(self, client, override_user, admin_user, override_data_service):
+    def test_success(self, client, override_user, admin_user, override_data_service):
 
         override_user(admin_user)
 
@@ -49,7 +49,7 @@ class TestPostData:
         response = client.post("/api/v1/data")
         assert response.status_code == 422
 
-    def test_user_permissions_incorrect(self, client, override_user, read_only_user):
+    def test_invalid_permissions(self, client, override_user, read_only_user):
 
         override_user(read_only_user)
 
