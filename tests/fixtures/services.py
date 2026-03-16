@@ -53,6 +53,30 @@ class MockUserService:
             },
             "TEST_KEY_123"
         )
+    
+    def get_user(self, id):
+        return {
+            "first_name": "TEST_FIRST_NAME",
+            "last_name": "TEST_LAST_NAME",
+            "email": "TEST_MAIL",
+            "is_admin": True,
+            "can_write": True,
+            "can_read": True,
+            "user_id": 2,
+            "is_active": True
+        }
+    
+    def update_user(self, data, user_id):
+        return {
+            "is_admin": True,
+            "is_active": True,
+            "can_read": True,
+            "can_write": True,
+            "email": "TEST_MAIL",
+            "first_name": "UPDATED_NAME",
+            "last_name": "TEST_LAST_NAME",
+            "user_id": 4
+        }
 
 @pytest.fixture
 def mock_user_service():
