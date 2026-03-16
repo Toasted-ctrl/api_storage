@@ -20,7 +20,7 @@ class PayloadNewUser(BaseModel):
     can_read: bool
     can_write: bool
 
-class NewUser(BaseModel):
+class NewUserDetailed(BaseModel):
     first_name: str
     last_name: str
     email: str
@@ -28,6 +28,10 @@ class NewUser(BaseModel):
     can_read: bool
     can_write: bool
     id: int
+    is_active: bool
+
+class NewUser(BaseModel):
+    user: NewUserDetailed
     api_key: str
 
 class ReturnNewUser(BaseModel):
