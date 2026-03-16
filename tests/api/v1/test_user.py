@@ -117,3 +117,118 @@ class TestPostUser:
         response = client.post("/api/v1/users")
         assert response.status_code == expected[0]
         assert response.json() == expected[1]
+
+class TestGetUser:
+
+    def test_success(self, client, override_user, admin_user, override_user_service):
+        override_user(admin_user)
+        response = client.get("/api/v1/users/2")
+        assert response.status_code == 200
+        assert response.json() == {
+            "detail": "Success",
+            "user": {
+                "can_read": True,
+                "can_write": True,
+                "email": "TEST_MAIL",
+                "first_name": "TEST_FIRST_NAME",
+                "is_active": True,
+                "is_admin": True,
+                "last_name": "TEST_LAST_NAME",
+                "user_id": 2
+            }
+        }
+
+    def test_invalid_permissions(self, client, override_user, no_access_user):
+        override_user(no_access_user)
+        response = client.get("/api/v1/users/1")
+        assert response.status_code == 403
+        assert response.json() == {
+            "detail": "Admin permission required"
+        }
+
+    def test_missing_api_key(self, client):
+        response = client.get("/api/v1/users/1")
+        assert response.status_code == 401
+        assert response.json() == {
+            "detail": "Missing API key"
+        }
+
+    remaining_permission_errors_data = [
+        ((403, "Invalid API key"), (403, {"detail": "Invalid API key"})),
+        ((403, "User not found"), (403, {"detail": "User not found"})),
+        ((403, "User inactive"), (403, {"detail": "User inactive"}))
+    ]
+
+    @pytest.mark.parametrize("data, expected", remaining_permission_errors_data)
+    def test_remaining_permission_errors(self, client, override_auth_error, data, expected):
+        override_auth_error(data[0], data[1])
+        response = client.get("/api/v1/users/1")
+        assert response.status_code == expected[0]
+        assert response.json() == expected[1]
+
+class TestUpdateUser:
+
+    def test_success(self, client, override_user, admin_user, override_user_service):
+        override_user(admin_user)
+        payload = {
+            "first_name": "TEST_NEW_NAME"
+        }
+        response = client.put("/api/v1/users/3",json=payload)
+        assert response.status_code == 200
+        assert response.json() == {
+            "detail": "Success",
+            "user": {
+                "can_read": True,
+                "can_write": True,
+                "email": "TEST_MAIL",
+                "is_admin": True,
+                "is_active": True,
+                "first_name": "UPDATED_NAME",
+                "last_name": "TEST_LAST_NAME",
+                "user_id": 4
+            }
+        }
+
+    def test_payload_missing(self, client, override_user, admin_user, override_user_service):
+        override_user(admin_user)
+        response = client.put("/api/v1/users/3")
+        assert response.status_code == 422
+
+    def test_payload_incomplete(self, client, override_user, admin_user, override_user_service):
+        override_user(admin_user)
+        payload = {
+            "first_name": None
+        }
+        response = client.put("/api/v1/users/3", json=payload)
+        assert response.status_code == 400
+        assert response.json() == {
+            "detail": "No updates included in body"
+        }
+
+    def test_invalid_permissions(self, client, override_user, no_access_user):
+        override_user(no_access_user)
+        response = client.put("/api/v1/users/3")
+        assert response.status_code == 403
+        assert response.json() == {
+            "detail": "Admin permission required"
+        }
+
+    def test_missing_api_key(self, client):
+        response = client.put("/api/v1/users/3")
+        assert response.status_code == 401
+        assert response.json() == {
+            "detail": "Missing API key"
+        }
+
+    remaining_permission_errors_data = [
+        ((403, "Invalid API key"), (403, {"detail": "Invalid API key"})),
+        ((403, "User not found"), (403, {"detail": "User not found"})),
+        ((403, "User inactive"), (403, {"detail": "User inactive"}))
+    ]
+
+    @pytest.mark.parametrize("data, expected", remaining_permission_errors_data)
+    def test_remaining_permission_errors(self, client, override_auth_error, data, expected):
+        override_auth_error(data[0], data[1])
+        response = client.put("/api/v1/users/3")
+        assert response.status_code == expected[0]
+        assert response.json() == expected[1]
