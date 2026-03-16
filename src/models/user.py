@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import Any
 
 class UserSimple(BaseModel):
     email: str
@@ -31,15 +32,18 @@ class ReturnNewUser(BaseModel):
     new_user: NewUser
 
 class ReturnUser(BaseModel):
-    first_name: str
-    last_name: str
-    email: str
-    can_read: bool
-    can_write: bool
-    user_id: bool
-    is_active: bool
-    is_admin: bool
+    detail: str
+    user: UserDetailed
 
 class ReturnUsers(BaseModel):
     detail: str
     users: list[UserSimple]
+
+class PayloadUpdateUser(BaseModel):
+    first_name: str | None = None
+    last_name: str | None = None
+    email: str | None = None
+    is_admin: bool | None = None
+    can_read: bool | None = None
+    can_write: bool | None = None
+    is_active: bool | None = None

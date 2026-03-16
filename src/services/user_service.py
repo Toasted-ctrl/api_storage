@@ -11,22 +11,18 @@ class UserService:
         return self._db.query(Users.user_id, Users.email).distinct().all()
     
     def _check_key_unique(self, key: str) -> bool:
-
         """
         Verifies whether the generated key already exists in the api_keys table. Will return True if the
         key is unique.
         """
-
         return (self._db.query(ApiKeys.hashed_api_key)
                 .filter(ApiKeys.hashed_api_key == key)
                 .scalar()) is None
     
     def _create_keys(self) -> tuple[str, str]:
-
         """
         Will create a set of keys and ensure the hashed version does not already exist in the database.
         """
-
         unhashed_key, hashed_key = generate_keys()
         if self._check_key_unique(key=hashed_key):
             return (unhashed_key, hashed_key)
@@ -39,13 +35,11 @@ class UserService:
         return self._db.query(Users).filter(Users.user_id == id).first()
     
     def post_user(self, data: dict) -> tuple[dict, str] | None:
-
         """
         Returns none if failed to post user, returns a tuple with:
         [0]: added user dict
         [1]: unhashed api key
         """
-
         try:
             unhashed_key, hashed_key = self._create_keys()
                 
@@ -62,3 +56,16 @@ class UserService:
         
         except Exception:
             return None
+        
+    def update_user(self, data: dict, user_id: int) -> dict | None:
+        """
+        Returns updated user.
+        """
+        user = self.get_user(id=user_id)
+        if not user:
+            return None
+        for key, value in data.items():
+            setattr(user, key, value)
+        self._db.commit()
+        self._db.refresh()
+        return user
