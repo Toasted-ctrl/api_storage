@@ -4,6 +4,14 @@ Hi! This is a practise project where I wanted to try out creating an API that co
 I'm mainly doing this as I wanted to learn about running an application through Docker, as well as trying to create a scalable API. I also wanted to learn about nginx to make this an API that I could load-balance if needed. I also wanted to try build this including tests for everything. Previously, I mainly wrote stuff without tests, but in this project I wanted it to be more controlled, and follow best practises. My intention is to for now, only store the reponses. Any ETL processes to the data will be implemented in a separate application.
 ## What does it do?
 In this tool I also wanted to cover management functions, such as authentication through an API key (stored as a hash in the database), as well as user management if you're an admin. Additionally it provides some features to interact with the data we've stored in the 'ingest' table. The API is built on the FastAPI library.
+## Future updates
+There is still some work left to do. I would like to:
+- Write tests for the data_service class
+- Write tests for the user_service class
+- Expand on the type of data that may be ingested
+- Include a Docker Compose file
+  - Add property run a containerized load balancer
+  - Add property to run several APIs concurrently
 ## Tech stack
 - PostgreSQL
 - SQLAlchemy
