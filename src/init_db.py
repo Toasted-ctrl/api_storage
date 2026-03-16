@@ -19,51 +19,53 @@ if __name__ == '__main__':
         print("UNEXPECTED ERROR: Please check that the database instance is running.")
         sys.exit()
 
-    print("\n--- Creating System User ---\n")
+    load_dotenv()
+    if os.getenv("include_admin_user") == "true":
 
-    try:
-        print(">> Loading user data")
-        load_dotenv()
+        print("\n--- Creating System User ---\n")
 
-        first_name = os.getenv("system_user_first_name")
-        last_name = os.getenv("system_user_last_name")
-        unhashed_key = os.getenv("system_user_unhashed_key")
-        email = os.getenv("system_user_email")
+        try:
+            print(">> Loading user data")
 
-        print(">> Creating hashed key")
-        hashed_key = hash_sha256(input=unhashed_key)
+            first_name = os.getenv("system_user_first_name")
+            last_name = os.getenv("system_user_last_name")
+            unhashed_key = os.getenv("system_user_unhashed_key")
+            email = os.getenv("system_user_email")
 
-        print(">> Initiating database connection")
-        db: Session = next(get_db())
+            print(">> Creating hashed key")
+            hashed_key = hash_sha256(input=unhashed_key)
 
-        print(">> Inserting System User to user table")
-        user = Users(
-            email=email,
-            first_name=first_name,
-            last_name=last_name,
-            is_admin=True,
-            can_read=True,
-            can_write=True,
-            is_active=True
-        )
+            print(">> Initiating database connection")
+            db: Session = next(get_db())
 
-        db.add(user)
-        db.commit()
+            print(">> Inserting System User to user table")
+            user = Users(
+                email=email,
+                first_name=first_name,
+                last_name=last_name,
+                is_admin=True,
+                can_read=True,
+                can_write=True,
+                is_active=True
+            )
 
-        print(">> Fetching user_id")
-        user_id = db.query(Users.user_id).filter(Users.email == email).scalar()
+            db.add(user)
+            db.commit()
 
-        print(">> Inserting System User API key")
-        key = ApiKeys(
-            hashed_api_key=hashed_key,
-            is_valid=True,
-            user_id=user_id
-        )
+            print(">> Fetching user_id")
+            user_id = db.query(Users.user_id).filter(Users.email == email).scalar()
 
-        db.add(key)
-        db.commit()
+            print(">> Inserting System User API key")
+            key = ApiKeys(
+                hashed_api_key=hashed_key,
+                is_valid=True,
+                user_id=user_id
+            )
 
-    except Exception:
-        print("UNEXPECTED ERROR: Unable to create System User")
+            db.add(key)
+            db.commit()
+
+        except Exception:
+            print("UNEXPECTED ERROR: Unable to create System User")
 
     print("\n--- DATABASE INITIALIZATION COMPLETE ---\n")
