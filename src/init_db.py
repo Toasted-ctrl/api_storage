@@ -63,8 +63,7 @@ if __name__ == '__main__':
         db.add(key)
         db.commit()
 
-    except Exception as e:
+    except Exception:
         print("UNEXPECTED ERROR: Unable to create System User")
-        print(e)
 
     print("\n--- DATABASE INITIALIZATION COMPLETE ---\n")
