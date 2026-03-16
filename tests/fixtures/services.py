@@ -48,7 +48,7 @@ class MockUserService:
                 "is_admin": True,
                 "can_write": True,
                 "can_read": True,
-                "id": 2,
+                "user_id": 2,
                 "is_active": True
             },
             "TEST_KEY_123"

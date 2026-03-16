@@ -67,7 +67,7 @@ class TestPostUser:
                     "can_read": True,
                     "is_admin": True,
                     "can_write": True,
-                    "id": 2,
+                    "user_id": 2,
                     "email": "TEST_MAIL",
                     "first_name": "TEST_FIRST_NAME",
                     "last_name": "TEST_LAST_NAME",
