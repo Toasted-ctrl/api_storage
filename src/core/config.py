@@ -6,7 +6,7 @@ load_dotenv()
 class Config(BaseSettings):
     app_name: str = "DIA: Data Ingest API"
     app_maintainer: str = "Toasted-ctrl"
-    app_version: str = "0.1.1"
+    app_version: str = "0.1.2"
 
     # NOTE: These will autopopulate as the BaseSettings class imports matching load_dotenv() values automatically.
     db_hostname: str = ""
