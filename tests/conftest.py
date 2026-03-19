@@ -5,6 +5,8 @@ from fastapi.testclient import TestClient
 from tests.fixtures.auth import *
 from tests.fixtures.services import *
 
+from auth.dependencies import cache
+
 @pytest.fixture
 def app():
     from main import app
@@ -15,3 +17,9 @@ def app():
 def client(app):
     with TestClient(app) as c:
         yield c
+
+@pytest.fixture(autouse=True)
+def clear_cache():
+    cache.clear()
+    yield
+    cache.clear()
