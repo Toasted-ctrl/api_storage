@@ -8,6 +8,8 @@ services:
     container_name: DIA_01
     ports:
       - "8000:80" # Maps host port 8000 to container port 80
+    env_file:
+      - .env
     environment:
       - PYTHONPATH=/code/app
     volumes:
@@ -21,6 +23,8 @@ services:
     container_name: DIA_02
     ports:
       - "8001:80" # Maps host port 8001 to container port 80
+    env_file:
+      - .env
     environment:
       - PYTHONPATH=/code/app
     volumes:
