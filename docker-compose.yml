@@ -1,0 +1,15 @@
+version: "1.0"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: DataIngestApi01
+    ports:
+      - "8000:80" # Maps host port 8000 to container port 80
+    environment:
+      - PYTHONPATH=/code/app
+    volumes:
+      - ./src:/code/app
+    restart: unless-stopped
