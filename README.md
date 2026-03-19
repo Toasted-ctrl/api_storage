@@ -10,8 +10,7 @@ There is still some work left to do. I would like to:
 - Write tests for the user_service class
 - Expand on the type of data that may be ingested
 - Include a Docker Compose file
-  - Add property run a containerized load balancer
-  - Add property to run several APIs concurrently
+  - Add property to run a containerized load balancer
 ## Tech stack
 - PostgreSQL
 - SQLAlchemy
@@ -21,6 +20,7 @@ There is still some work left to do. I would like to:
 ## Requirements
 *Make sure to include 'src' in the pythonpath*. Run the below command from the main directory:
 - Windows: $env:PYTHONPATH="src"
+- Linux: export PYTHONPATH=$(pwd)/src
 ### Database
 You must already have a database instance running, including the following tables from the 'src.database.schema' file. You may create these by running src/init_db directly. The .env file must contain all credentials and the database instance must be running when running src/init_db. The required tables are:
 - api_keys
