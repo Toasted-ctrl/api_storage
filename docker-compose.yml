@@ -20,7 +20,7 @@ services:
       dockerfile: Dockerfile
     container_name: DataIngestApi02
     ports:
-      - "8001:80" # Maps host port 8000 to container port 80
+      - "8001:80" # Maps host port 8001 to container port 80
     environment:
       - PYTHONPATH=/code/app
     volumes:
