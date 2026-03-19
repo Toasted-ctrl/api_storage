@@ -19,7 +19,10 @@ __pychache__/
 LICENSE*
 
 # Database table initialization file
-init_database.py
+init_db.py
 
 # REAMDE.md
 README.md
+
+# Example .env
+.env.example
