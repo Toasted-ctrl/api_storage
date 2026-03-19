@@ -1,13 +1,26 @@
 version: "1.0"
 
 services:
-  app:
+  api_1:
     build:
       context: .
       dockerfile: Dockerfile
     container_name: DataIngestApi01
     ports:
       - "8000:80" # Maps host port 8000 to container port 80
+    environment:
+      - PYTHONPATH=/code/app
+    volumes:
+      - ./src:/code/app
+    restart: unless-stopped
+
+  api_2:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: DataIngestApi02
+    ports:
+      - "8001:80" # Maps host port 8000 to container port 80
     environment:
       - PYTHONPATH=/code/app
     volumes:
