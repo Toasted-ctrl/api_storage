@@ -29,6 +29,21 @@ services:
       - ./src:/code/app
     restart: unless-stopped
 
+  api_3:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: DIA_03
+    ports:
+      - "8002:80" # Maps host port 8002 to container port 80
+    env_file:
+      - .env
+    environment:
+      - PYTHONPATH=/code/app
+    volumes:
+      - ./src:/code/app
+    restart: unless-stopped
+
   nginx:
     image: nginx:latest
     container_name: DIA_NGINX_LB
@@ -39,4 +54,5 @@ services:
     depends_on:
       - api_1
       - api_2
+      - api_3
     restart: unless-stopped
