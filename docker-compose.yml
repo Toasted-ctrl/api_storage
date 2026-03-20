@@ -28,3 +28,15 @@ services:
     volumes:
       - ./src:/code/app
     restart: unless-stopped
+
+  nginx:
+    image: nginx_latest
+    container_name: DIA_NXINX_LB
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx/conf:ro
+    depends_on:
+      - api_1
+      - api_2
+    restart: unless-stopped
