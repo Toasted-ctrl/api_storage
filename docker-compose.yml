@@ -31,7 +31,7 @@ services:
 
   nginx:
     image: nginx_latest
-    container_name: DIA_NXINX_LB
+    container_name: DIA_NGINX_LB
     ports:
       - "8080:80"
     volumes:
