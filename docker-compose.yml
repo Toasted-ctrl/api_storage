@@ -30,7 +30,7 @@ services:
     restart: unless-stopped
 
   nginx:
-    image: nginx_latest
+    image: nginx:latest
     container_name: DIA_NGINX_LB
     ports:
       - "8080:80"
