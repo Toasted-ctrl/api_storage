@@ -9,8 +9,6 @@ There is still some work left to do. I would like to:
 - Write tests for the data_service class
 - Write tests for the user_service class
 - Expand on the type of data that may be ingested
-- Include a Docker Compose file
-  - Add property to run a containerized load balancer
 ## Tech stack
 - PostgreSQL
 - SQLAlchemy
