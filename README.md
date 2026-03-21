@@ -30,4 +30,4 @@ The database connection details must be present in the .env file. You will find 
 ## Tests
 To run tests run pytest from the main directory, run "pytest -v" or "pytest -vv". The test will create and discard an in-memory sqlite database, having a database with all tables presents already established is not required. Please note that 'src' needs to be set in the pythonpath.
 ## Starting the API
-To run the api, either build and run it as a set of docker containers (including load balancer through nginx) using the added docker compose file, or run "uvicorn main:app --reload" from the main directory. *Do not forget to include 'src' into the pythonpath if running from the root directory directly.
+To run the api, either build and run it as a set of docker containers (including load balancer through nginx) using the added docker compose file, or run "uvicorn main:app --reload" from the main directory. *Do not forget to include 'src' into the pythonpath if running from the root directory directly.*
