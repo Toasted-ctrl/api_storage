@@ -4,6 +4,7 @@ from fastapi.testclient import TestClient
 
 from tests.fixtures.auth import *
 from tests.fixtures.services import *
+from tests.fixtures.database import *
 
 from auth.dependencies import cache
 
