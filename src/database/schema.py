@@ -10,7 +10,7 @@ class ApiKeys(Base):
     hashed_api_key = Column(String(150), primary_key=True, nullable=False)
     user_id = Column(Integer, nullable=False)
     is_valid = Column(Boolean, nullable=False)
-    date_created = Column(DateTime(timezone=False), server_default=func.now(), nullable=False)
+    inserted = Column(DateTime(timezone=False), server_default=func.now(), nullable=False)
 
 class Users(Base):
     __tablename__ = 'users'
@@ -33,5 +33,6 @@ class Ingest(Base):
     url_ext = Column(String(100), nullable=True)
     params = Column(JSON, nullable=True)
     status_code = Column(Integer, nullable=True)
+    type = Column(String(10), nullable=True)
     data = Column(JSON, nullable=True)
-    date_created = Column(DateTime(timezone=False), server_default=func.now(), nullable=False)
+    inserted = Column(DateTime(timezone=False), server_default=func.now(), nullable=False)
