@@ -24,6 +24,7 @@ class TestPostData:
                     "data": None,
                     "params": None,
                     "status_code": None,
+                    "type": None,
                     "url_ext": None
                 }
             ]
