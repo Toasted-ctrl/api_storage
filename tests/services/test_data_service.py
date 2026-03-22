@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import MagicMock
 from database.schema import Ingest
-from services.data_service import DataService  # adjust import
+from services.data_service import DataService
 
 @pytest.fixture
 def mock_session():
