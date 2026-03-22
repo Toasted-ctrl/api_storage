@@ -17,7 +17,7 @@ def test_endpoint_status(client):
     response = client.get("/api/v1/status")
     assert response.status_code == 200
     assert response.json() == {
-        "message": "OK"
+        "status": "OK"
     }
 
 def test_endpoint_root(client):
