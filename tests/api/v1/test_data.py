@@ -127,3 +127,52 @@ class TestGetDataSources:
         response = client.get("/api/v1/data/sources")
         assert response.status_code == expected[0]
         assert response.json() == expected[1]
+
+class TestTestPostData:
+
+    def test_success(self, client):
+
+        payload = {
+            "entries": [
+                {
+                    "base_url": "TEST_BASE_URL"
+                }
+            ]
+        }
+
+        response = client.put("/api/v1/data/test",
+                              json=payload)
+        
+        assert response.status_code == 200
+        assert response.json() == {
+            "detail": "Success",
+            "ingested": [
+                {
+                    "base_url": "TEST_BASE_URL",
+                    "data": None,
+                    "params": None,
+                    "status_code": None,
+                    "type": None,
+                    "url_ext": None
+                }
+            ]
+        }
+
+    def test_payload_missing(self, client):
+
+        response = client.put("/api/v1/data/test")
+        assert response.status_code == 422
+
+    def test_payload_incomplete(self, client):
+
+        payload = {
+            "entries": [
+                {
+                    "url_ext": "TEST_URL_EXT"
+                }
+            ]
+        }
+
+        response = client.put("/api/v1/data/test",
+                              json=payload)
+        assert response.status_code == 422

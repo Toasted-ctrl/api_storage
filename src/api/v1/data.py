@@ -12,10 +12,11 @@ def get_data_service(session=Depends(get_db)) -> DataService:
     return DataService(session=session)
 
 @router.post(
-        "/data",
-        response_model=ReturnDataEntries,
-        tags=tags,
-        dependencies=[Depends(require_permission(write=True))])
+    "/data",
+    response_model=ReturnDataEntries,
+    tags=tags,
+    dependencies=[Depends(require_permission(write=True))]
+)
 def post_data(payload: PayloadDataEntries, data_service: DataService=Depends(get_data_service)):
     data = data_service.post_data(data=payload.entries)
     if not data:
@@ -26,10 +27,11 @@ def post_data(payload: PayloadDataEntries, data_service: DataService=Depends(get
     }
 
 @router.get(
-        "/data/sources",
-        response_model=ReturnSources,
-        tags=tags,
-        dependencies=[Depends(require_permission(read=True))])
+    "/data/sources",
+    response_model=ReturnSources,
+    tags=tags,
+    dependencies=[Depends(require_permission(read=True))]
+)
 def get_data_sources(data_service: DataService=Depends(get_data_service)):
     result = data_service.get_sources()
     if not result:
@@ -37,4 +39,15 @@ def get_data_sources(data_service: DataService=Depends(get_data_service)):
     return {
         "detail": "Success",
         "sources": result
+    }
+
+@router.put(
+    "/data/test",
+    response_model=ReturnDataEntries,
+    tags=tags
+)
+def test_post_data(payload: PayloadDataEntries):
+    return {
+        "detail": "Success",
+        "ingested": payload.entries
     }
