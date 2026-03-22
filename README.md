@@ -6,7 +6,7 @@ I'm mainly doing this as I wanted to learn about running an application through 
 In this tool I also wanted to cover management functions, such as authentication through an API key (stored as a hash in the database), as well as user management if you're an admin. Additionally it provides some features to interact with the data we've stored in the 'ingest' table. The API is built on the FastAPI library.
 ## Future updates
 There is still some work left to do. I would like to:
-- Expand on the type of data that may be ingested
+- Implement new enpoint to test data ingestion without writing to database. This would be useful to see if the format you have the data in would be correct or not before committing to ingesting.
 ## Tech stack
 - PostgreSQL
 - SQLAlchemy
