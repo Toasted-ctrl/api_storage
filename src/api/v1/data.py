@@ -41,7 +41,7 @@ def get_data_sources(data_service: DataService=Depends(get_data_service)):
         "sources": result
     }
 
-@router.put(
+@router.post(
     "/data/test",
     response_model=ReturnDataEntries,
     tags=tags

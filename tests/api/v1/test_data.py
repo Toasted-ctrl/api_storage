@@ -140,7 +140,7 @@ class TestTestPostData:
             ]
         }
 
-        response = client.put("/api/v1/data/test",
+        response = client.post("/api/v1/data/test",
                               json=payload)
         
         assert response.status_code == 200
@@ -160,7 +160,7 @@ class TestTestPostData:
 
     def test_payload_missing(self, client):
 
-        response = client.put("/api/v1/data/test")
+        response = client.post("/api/v1/data/test")
         assert response.status_code == 422
 
     def test_payload_incomplete(self, client):
@@ -173,6 +173,6 @@ class TestTestPostData:
             ]
         }
 
-        response = client.put("/api/v1/data/test",
+        response = client.post("/api/v1/data/test",
                               json=payload)
         assert response.status_code == 422
