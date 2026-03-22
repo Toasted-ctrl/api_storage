@@ -48,7 +48,7 @@ class UserService:
             self._db.add(user)
             self._db.commit()
 
-            keys = ApiKeys(hashed_api_key=hashed_key, user_id=user.user_id)
+            keys = ApiKeys(hashed_api_key=hashed_key, user_id=user.user_id, is_valid=True)
             self._db.add(keys)
             self._db.commit()
 
