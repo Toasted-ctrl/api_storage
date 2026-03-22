@@ -67,5 +67,5 @@ class UserService:
         for key, value in data.items():
             setattr(user, key, value)
         self._db.commit()
-        self._db.refresh()
+        self._db.refresh(user)
         return user
