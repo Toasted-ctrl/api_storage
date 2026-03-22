@@ -5,6 +5,7 @@ class Entry(BaseModel):
     url_ext: str | None = None
     params: dict | None = None
     data: dict | None = None
+    type: str | None = None
     status_code: int | None = None
 
 class PayloadDataEntries(BaseModel):
