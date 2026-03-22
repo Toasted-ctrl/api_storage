@@ -47,7 +47,7 @@ class UserService:
             user.is_active = True
             self._db.add(user)
             self._db.commit()
-
+        
             keys = ApiKeys(hashed_api_key=hashed_key, user_id=user.user_id, is_valid=True)
             self._db.add(keys)
             self._db.commit()
@@ -55,6 +55,7 @@ class UserService:
             return user, unhashed_key
         
         except Exception:
+            self._db.rollback() # Rolling back in case either adding key or user failed.
             return None
         
     def update_user(self, data: dict, user_id: int) -> dict | None:
@@ -66,6 +67,11 @@ class UserService:
             return None
         for key, value in data.items():
             setattr(user, key, value)
-        self._db.commit()
-        self._db.refresh(user)
-        return user
+
+        try:
+            self._db.commit()
+            self._db.refresh(user)
+            return user
+        except Exception:
+            self._db.rollback() # Rolling back in case update failed.
+            return None
