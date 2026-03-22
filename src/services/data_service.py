@@ -13,10 +13,10 @@ class DataService:
         try:
             self._db.add_all([Ingest(**entry) for entry in data])
             self._db.commit()
-            self._db.refresh()
             return data
         except Exception:
+            self._db.rollback() # Rolling back in case operation fails.
             return None
 
-    def get_sources(self) -> dict | None:
+    def get_sources(self) -> list[tuple[str, str]] | None:
         return self._db.query(Ingest.base_url, Ingest.url_ext).distinct().all()
