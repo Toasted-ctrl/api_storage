@@ -6,8 +6,6 @@ I'm mainly doing this as I wanted to learn about running an application through 
 In this tool I also wanted to cover management functions, such as authentication through an API key (stored as a hash in the database), as well as user management if you're an admin. Additionally it provides some features to interact with the data we've stored in the 'ingest' table. The API is built on the FastAPI library.
 ## Future updates
 There is still some work left to do. I would like to:
-- Write tests for the data_service class
-- Write tests for the user_service class
 - Expand on the type of data that may be ingested
 ## Tech stack
 - PostgreSQL
@@ -28,6 +26,6 @@ You must already have a database instance running, including the following table
 ### .env
 The database connection details must be present in the .env file. You will find an example .env file in the main directory. Rename to .env and enter your details. If you wish to add a main admin user when running src/init_db, set "include_admin_user" to "true" and add the user details.
 ## Tests
-To run tests run pytest from the main directory, run "pytest -v" or "pytest -vv". The test will create and discard an in-memory sqlite database, having a database with all tables presents already established is not required. Please note that 'src' needs to be set in the pythonpath.
+To run tests run pytest from the root directory, run "pytest -v" or "pytest -vv". *Do not forget to include 'src' into the pythonpath before running tests from the root directory.*
 ## Starting the API
-To run the api, either build and run it as a set of docker containers (including load balancer through nginx) using the added docker compose file, or run "uvicorn main:app --reload" from the main directory. *Do not forget to include 'src' into the pythonpath if running from the root directory directly.*
+To run the api, either build and run it as a set of docker containers (including load balancer through nginx) using the added docker compose file, or run "uvicorn main:app --reload" from the root directory. *Do not forget to include 'src' into the pythonpath if running from the root directory directly.*
